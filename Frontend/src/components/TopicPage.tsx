@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Topic, TopicView, Resource } from '../types';
+import { Topic, TopicView, Resource } from '../types/types';
 import { ArrowLeft, BookOpen, Play, Sparkles, FileText, Trash2, Download, ExternalLink, Presentation, GraduationCap } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 // import ResourceUpload from './ResourceUpload';

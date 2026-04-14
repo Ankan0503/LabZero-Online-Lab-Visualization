@@ -1,6 +1,6 @@
 import React from 'react';
-import { Subject } from '../types';
-import { SUBJECTS } from '../constants';
+import { Subject } from '../types/types';
+import { SUBJECTS } from '../utils/constants';
 import { Beaker, Zap, Calculator, Dna, ArrowRight } from 'lucide-react';
 
 interface LandingPageProps {

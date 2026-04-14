@@ -3,11 +3,13 @@ import { motion, AnimatePresence } from "framer-motion";
 import AtomVisualizer from './components/AtomicVisualizer';
 import PeriodicTable from './components/PeriodicTable';
 import LandingPage from './components/LandingPage';
-import { ELEMENTS } from './constants';
-import { ElementData, ViewState, TopicId, Subject, Topic } from './types';
+import { ELEMENTS } from './utils/constants';
+import { getElements } from './services/elementsService';
+import { ElementData, ViewState, TopicId, Subject, Topic } from './types/types';
 import { Sparkles, MessageSquare, X } from 'lucide-react';
 
 const App: React.FC = () => {
+  const [elements, setElements] = useState<ElementData[]>(ELEMENTS);
   const [selectedElement, setSelectedElement] = useState<ElementData>(ELEMENTS[0]);
   const [viewState, setViewState] = useState<ViewState>(ViewState.LANDING);
   const [selectedSubject, setSelectedSubject] = useState<Subject | null>(null);
@@ -23,6 +25,18 @@ const App: React.FC = () => {
       .then(res => res.json())
       .then(data => setMessage(data.status))
       .catch(err => setMessage("Backend offline"));
+      
+    // Fetch elements from the database via elementService
+    getElements()
+      .then(data => {
+        if (data && data.length > 0) {
+          setElements(data);
+          // Only change selectedElement to fetched data if it hasn't been deliberately changed
+          // Since it's an initial fetch, it's safe to just apply.
+          setSelectedElement(data[0]); 
+        }
+      })
+      .catch(err => console.error("Failed to fetch elements from DB:", err));
   }, []);
 
   // 🌗 Theme handling
@@ -47,6 +61,7 @@ const App: React.FC = () => {
 
             <div className="h-[420px] border-t border-white/10 bg-slate-950/50 backdrop-blur-xl overflow-y-auto">
               <PeriodicTable
+                elements={elements}
                 onSelect={setSelectedElement}
                 selectedSymbol={selectedElement.symbol}
               />

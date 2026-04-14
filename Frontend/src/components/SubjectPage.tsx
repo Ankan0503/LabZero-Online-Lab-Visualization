@@ -1,5 +1,5 @@
 import React from 'react';
-import { Subject, Topic } from '../types';
+import { Subject, Topic } from '../types/types';
 import { ArrowLeft, ArrowRight, Beaker, Zap, Calculator, Dna } from 'lucide-react';
 import { motion } from 'framer-motion';
 

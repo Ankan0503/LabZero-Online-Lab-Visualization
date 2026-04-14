@@ -1,7 +1,7 @@
 
 import React, { useEffect, useRef, useState } from 'react';
 import * as d3 from 'd3';
-import { ElementData } from './types';
+import { ElementData } from '../types/types';
 
 interface AtomVisualizerProps {
   element: ElementData;

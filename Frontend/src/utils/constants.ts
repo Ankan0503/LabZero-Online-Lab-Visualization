@@ -1,5 +1,5 @@
 
-import { ElementData, Molecule, Subject, SubjectId, TopicId } from './types';
+import { ElementData, Molecule, Subject, SubjectId, TopicId } from '../types/types';
 
 export const SUBJECTS: Subject[] = [
   {

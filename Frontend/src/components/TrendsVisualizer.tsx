@@ -1,7 +1,7 @@
 
 import React, { useState, useMemo } from 'react';
-import { ELEMENTS } from '../constants';
-import { ElementData } from '../types';
+import { ELEMENTS } from '../utils/constants';
+import { ElementData } from '../types/types';
 
 type Property = 'radius' | 'ionization' | 'electronegativity';
 
