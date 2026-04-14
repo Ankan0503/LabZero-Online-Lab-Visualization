@@ -22,7 +22,17 @@ const App: React.FC = () => {
   const [theme, setTheme] = useState<'dark' | 'light'>('dark');
   const [atomRotation, setAtomRotation] = useState({ dx: 0, dy: 0 });
 
-  // 🌗 Theme
+  // ✅ Backend status (merged safely)
+  const [message, setMessage] = useState("Loading...");
+
+  useEffect(() => {
+    fetch('http://127.0.0.1:8000/api/status/')
+      .then(res => res.json())
+      .then(data => setMessage(data.status))
+      .catch(() => setMessage("Backend offline"));
+  }, []);
+
+  // 🌗 Theme handling
   useEffect(() => {
     if (theme === 'light') {
       document.body.classList.add('light-mode');
@@ -34,7 +44,7 @@ const App: React.FC = () => {
   // 🔬 Visualization Renderer
   const renderVisualization = (topicId: TopicId) => {
 
-    // 🧪 Chemistry special case
+    // 🧪 Chemistry
     if (topicId === TopicId.ATOMIC_STRUCTURE) {
       return (
         <div className="flex flex-col h-full">
@@ -64,7 +74,7 @@ const App: React.FC = () => {
       );
     }
 
-    // 📘 Default (Math + Others)
+    // 📘 Default
     return (
       <div className="p-8 space-y-6 overflow-y-auto h-full">
 
@@ -72,7 +82,7 @@ const App: React.FC = () => {
           {selectedTopic?.name}
         </h1>
 
-        {/* THEORY BLOCKS */}
+        {/* THEORY */}
         <div className="space-y-6">
           {selectedTopic?.theory?.split('\n\n').map((block, i) => (
 
@@ -86,7 +96,6 @@ const App: React.FC = () => {
 
               {block.split('\n').map((line, index) => {
 
-                // LaTeX
                 if (line.startsWith('$$') && line.endsWith('$$')) {
                   return (
                     <BlockMath key={index}>
@@ -95,7 +104,6 @@ const App: React.FC = () => {
                   );
                 }
 
-                // Heading
                 if (!line.startsWith('-') && line.length < 60) {
                   return (
                     <h3 key={index} className="text-lg font-semibold text-indigo-300 mt-2">
@@ -104,7 +112,6 @@ const App: React.FC = () => {
                   );
                 }
 
-                // Bullet
                 if (line.startsWith('-')) {
                   return (
                     <li key={index} className="ml-5 list-disc text-slate-300">
@@ -121,7 +128,7 @@ const App: React.FC = () => {
           ))}
         </div>
 
-        {/* 📊 Graph Visualizer for Mathematics */}
+        {/* 📊 Graph */}
         {selectedSubject?.name === "Mathematics" && (
           <motion.div
             initial={{ opacity: 0, y: 30 }}
@@ -139,28 +146,27 @@ const App: React.FC = () => {
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 text-white transition-colors duration-500">
 
-      {/* Background Texture */}
+      {/* Background */}
       <div className="fixed inset-0 pointer-events-none -z-10 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20"></div>
 
-      {/* 🌗 Theme Toggle */}
+      {/* Theme */}
       <button
         onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-        className="fixed top-6 right-6 px-4 py-2 rounded-lg bg-gradient-to-r from-indigo-500 to-purple-600 shadow-lg hover:shadow-indigo-500/30 hover:scale-105 transition z-[200]"
+        className="fixed top-6 right-6 px-4 py-2 rounded-lg bg-gradient-to-r from-indigo-500 to-purple-600 shadow-lg hover:scale-105 transition z-[200]"
       >
         {theme === 'dark' ? '☀️ Light Mode' : '🌙 Dark Mode'}
       </button>
 
-      {/* 🔥 Page Animations */}
+      {/* Backend status (small UI) */}
+      <div className="fixed bottom-4 left-4 text-sm text-slate-400">
+        Backend: {message}
+      </div>
+
       <AnimatePresence mode="wait">
 
         {/* Landing */}
         {viewState === ViewState.LANDING && (
-          <motion.div
-            key="landing"
-            initial={{ opacity: 0, y: 50 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -50 }}
-          >
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
             <LandingPage
               onSelectSubject={(subject) => {
                 setSelectedSubject(subject);
@@ -172,23 +178,12 @@ const App: React.FC = () => {
 
         {/* Subject */}
         {viewState === ViewState.SUBJECT && selectedSubject && (
-          <motion.div
-            key="subject"
-            initial={{ opacity: 0, x: 100 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -100 }}
-            className="p-10"
-          >
-            <button
-              onClick={() => setViewState(ViewState.LANDING)}
-              className="mb-6 px-4 py-2 rounded-lg bg-gradient-to-r from-indigo-500 to-purple-600 shadow-lg hover:scale-105 transition"
-            >
+          <motion.div className="p-10">
+            <button onClick={() => setViewState(ViewState.LANDING)} className="mb-6 px-4 py-2 rounded-lg bg-indigo-600">
               ← Back
             </button>
 
-            <h1 className="text-4xl font-bold mb-6">
-              {selectedSubject.name}
-            </h1>
+            <h1 className="text-4xl font-bold mb-6">{selectedSubject.name}</h1>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {selectedSubject.topics.map((topic) => (
@@ -198,12 +193,10 @@ const App: React.FC = () => {
                     setSelectedTopic(topic);
                     setViewState(ViewState.TOPIC);
                   }}
-                  className="p-6 rounded-2xl bg-white/5 backdrop-blur-xl border border-white/10 shadow-lg hover:shadow-indigo-500/20 hover:scale-[1.03] transition-all duration-300 cursor-pointer"
+                  className="p-6 rounded-xl bg-white/5 border border-white/10 hover:scale-105 cursor-pointer"
                 >
                   <h2 className="text-xl font-semibold">{topic.name}</h2>
-                  <p className="text-sm text-slate-400 mt-2">
-                    {topic.description}
-                  </p>
+                  <p className="text-sm text-slate-400 mt-2">{topic.description}</p>
                 </div>
               ))}
             </div>
@@ -212,17 +205,8 @@ const App: React.FC = () => {
 
         {/* Topic */}
         {viewState === ViewState.TOPIC && selectedTopic && (
-          <motion.div
-            key="topic"
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.9 }}
-            className="p-10"
-          >
-            <button
-              onClick={() => setViewState(ViewState.SUBJECT)}
-              className="mb-6 px-4 py-2 rounded-lg bg-gradient-to-r from-indigo-500 to-purple-600 shadow-lg hover:scale-105 transition"
-            >
+          <motion.div className="p-10">
+            <button onClick={() => setViewState(ViewState.SUBJECT)} className="mb-6 px-4 py-2 rounded-lg bg-indigo-600">
               ← Back
             </button>
 
@@ -234,14 +218,10 @@ const App: React.FC = () => {
 
       </AnimatePresence>
 
-      {/* 🤖 AI Button */}
+      {/* AI Button */}
       <button
         onClick={() => setShowAITutor(!showAITutor)}
-        className={`fixed bottom-8 right-8 w-16 h-16 rounded-2xl flex items-center justify-center shadow-xl transition-all duration-500 z-[100] ${
-          showAITutor
-            ? 'bg-rose-500 rotate-90'
-            : 'bg-gradient-to-r from-indigo-500 to-purple-600 hover:scale-110'
-        }`}
+        className="fixed bottom-8 right-8 w-16 h-16 rounded-2xl flex items-center justify-center bg-indigo-600"
       >
         {showAITutor ? <X size={28} /> : <MessageSquare size={28} />}
       </button>
