@@ -1,16 +1,15 @@
-
 import React from 'react';
-import { ELEMENTS } from '../constants';
-import { ElementData } from '../types';
+import { ElementData } from '../types/types';
 
 interface PeriodicTableProps {
+  elements: ElementData[];
   onSelect: (element: ElementData) => void;
   selectedSymbol: string;
 }
 
-const PeriodicTable: React.FC<PeriodicTableProps> = ({ onSelect, selectedSymbol }) => {
+const PeriodicTable: React.FC<PeriodicTableProps> = ({ elements, onSelect, selectedSymbol }) => {
   // Sort elements by atomic number to ensure correct sequence
-  const sortedElements = [...ELEMENTS].sort((a, b) => a.number - b.number);
+  const sortedElements = [...elements].sort((a, b) => a.number - b.number);
 
   return (
     <div className="overflow-x-auto pb-6 scrollbar-hide">

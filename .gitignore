@@ -2,15 +2,21 @@
 
 # Frontend
 node_modules/
+dist/
+dist-ssr/
+*.log
 
 # Django 
 __pycache__
+*.pyc
+*.pyo
 db.sqlite3
 venv/
 .env
 staticfiles/
-lab_api/
 
 # Extras
 Extras/
+
+.DS_Store
 
