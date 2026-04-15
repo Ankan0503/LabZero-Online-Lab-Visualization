@@ -3,9 +3,11 @@ import { Subject } from '../types';
 import { SUBJECTS } from '../constants';
 import { Beaker, Zap, Calculator, Dna, ArrowRight, Globe, Sparkles } from 'lucide-react';
 import { motion } from 'motion/react';
+import { Language, translations } from '../translations';
 
 interface LandingPageProps {
   onSelectSubject: (subject: Subject) => void;
+  language: Language;
 }
 
 const iconMap: Record<string, any> = {
@@ -15,7 +17,8 @@ const iconMap: Record<string, any> = {
   Dna,
 };
 
-const LandingPage: React.FC<LandingPageProps> = ({ onSelectSubject }) => {
+const LandingPage: React.FC<LandingPageProps> = ({ onSelectSubject, language }) => {
+  const t = (key: string) => translations[key]?.[language] || key;
   return (
     <div className="relative min-h-screen overflow-hidden grainy">
       {/* Background Decorative Elements */}
@@ -43,8 +46,8 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSelectSubject }) => {
             transition={{ duration: 0.8, delay: 0.2 }}
             className="text-8xl md:text-9xl font-display font-bold tracking-tighter text-white leading-[0.8] mb-12"
           >
-            OMNI<br />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-secondary">SCIENCE</span>
+            LabZero<br />
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-secondary">{translations.omniScience[language].split(' ')[1]}</span>
           </motion.h1>
 
           <motion.div 
@@ -54,7 +57,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSelectSubject }) => {
             className="grid grid-cols-1 md:grid-cols-2 gap-12 items-end"
           >
             <p className="text-xl md:text-2xl text-slate-400 font-light leading-relaxed max-w-xl">
-              A multi-dimensional interactive laboratory designed to bridge the gap between theoretical science and intuitive understanding.
+              {t('labDescription')}
             </p>
             <div className="flex flex-wrap gap-4 md:justify-end">
               <div className="px-4 py-2 rounded-full border border-white/10 bg-white/5 backdrop-blur-md flex items-center gap-2">
@@ -99,7 +102,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSelectSubject }) => {
                 </div>
                 
                 <div className="mt-auto pt-8 border-t border-white/5 flex items-center justify-between">
-                  <span className="text-[10px] font-mono uppercase tracking-[0.2em] text-slate-600 group-hover:text-slate-400 transition-colors">Enter Laboratory</span>
+                  <span className="text-[10px] font-mono uppercase tracking-[0.2em] text-slate-600 group-hover:text-slate-400 transition-colors">{t('enterLab')}</span>
                   <ArrowRight size={18} className={`transition-all duration-500 -translate-x-4 opacity-0 group-hover:translate-x-0 group-hover:opacity-100 ${accentColor}`} />
                 </div>
 

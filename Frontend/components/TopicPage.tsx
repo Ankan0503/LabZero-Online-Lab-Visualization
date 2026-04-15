@@ -7,15 +7,18 @@ import ReactMarkdown from 'react-markdown';
 // import Classroom from './Classroom';
 // import { getResourcesByTopic, deleteResource } from '../services/resourceService';
 import { motion, AnimatePresence } from 'motion/react';
+import { Language, translations } from '../translations';
 
 interface TopicPageProps {
   topic: Topic;
   onBack: () => void;
   visualization: React.ReactNode;
+  language: Language;
 }
 
-const TopicPage: React.FC<TopicPageProps> = ({ topic, onBack, visualization }) => {
+const TopicPage: React.FC<TopicPageProps> = ({ topic, onBack, visualization, language }) => {
   const [activeView, setActiveView] = useState<TopicView>(TopicView.THEORY);
+  const t = (key: string) => translations[key]?.[language] || key;
   const [resources, setResources] = useState<Resource[]>([]);
   const [viewingResource, setViewingResource] = useState<Resource | null>(null);
   const [isReading, setIsReading] = useState(false);
@@ -78,7 +81,7 @@ const TopicPage: React.FC<TopicPageProps> = ({ topic, onBack, visualization }) =
               className="group flex items-center gap-2 text-slate-500 hover:text-white transition-colors"
             >
               <ArrowLeft size={18} className="group-hover:-translate-x-1 transition-transform" />
-              <span className="text-[10px] font-mono uppercase tracking-[0.2em]">Back</span>
+              <span className="text-[10px] font-mono uppercase tracking-[0.2em]">{t('back')}</span>
             </button>
             
             <div className="h-8 w-px bg-white/10" />
@@ -98,9 +101,9 @@ const TopicPage: React.FC<TopicPageProps> = ({ topic, onBack, visualization }) =
 
           <nav className="flex items-center gap-1 p-1 bg-white/[0.02] rounded-full border border-white/5">
             {[
-              { id: TopicView.THEORY, label: 'Theory', icon: BookOpen },
-              { id: TopicView.VISUALIZATION, label: 'Visualization', icon: Play },
-              { id: TopicView.CLASSROOM, label: 'Classroom', icon: GraduationCap },
+              { id: TopicView.THEORY, label: t('theory'), icon: BookOpen },
+              { id: TopicView.VISUALIZATION, label: t('visualization'), icon: Play },
+              { id: TopicView.CLASSROOM, label: t('classroom'), icon: GraduationCap },
             ].map((view) => (
               <button
                 key={view.id}
@@ -143,7 +146,7 @@ const TopicPage: React.FC<TopicPageProps> = ({ topic, onBack, visualization }) =
                   <div className="flex items-center justify-between mb-8">
                     <div className="flex items-center gap-3">
                       <div className="h-px w-12 bg-primary" />
-                      <h2 className="text-[10px] font-mono text-primary uppercase tracking-[0.4em]">Theoretical Foundation</h2>
+                      <h2 className="text-[10px] font-mono text-primary uppercase tracking-[0.4em]">{t('theoreticalFoundation')}</h2>
                     </div>
                     <button
                       onClick={toggleReadAloud}
@@ -155,7 +158,7 @@ const TopicPage: React.FC<TopicPageProps> = ({ topic, onBack, visualization }) =
                     >
                       {isReading ? <VolumeX size={14} /> : <Volume2 size={14} />}
                       <span className="text-[9px] font-mono uppercase tracking-widest">
-                        {isReading ? 'Stop Reading' : 'Read Aloud'}
+                        {isReading ? t('stopReading') : t('readAloud')}
                       </span>
                     </button>
                   </div>
@@ -174,7 +177,7 @@ const TopicPage: React.FC<TopicPageProps> = ({ topic, onBack, visualization }) =
                       <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
                         <FileText size={20} />
                       </div>
-                      <h2 className="text-xl font-display font-bold text-white uppercase tracking-tight">Reference Materials</h2>
+                      <h2 className="text-xl font-display font-bold text-white uppercase tracking-tight">{t('referenceMaterials')}</h2>
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
