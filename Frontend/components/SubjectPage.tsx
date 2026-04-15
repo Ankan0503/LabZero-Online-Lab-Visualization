@@ -2,11 +2,13 @@ import React from 'react';
 import { Subject, Topic } from '../types';
 import { ArrowLeft, ArrowRight, Beaker, Zap, Calculator, Dna } from 'lucide-react';
 import { motion } from 'motion/react';
+import { Language, translations } from '../translations';
 
 interface SubjectPageProps {
   subject: Subject;
   onSelectTopic: (topic: Topic) => void;
   onBack: () => void;
+  language: Language;
 }
 
 const iconMap: Record<string, any> = {
@@ -16,8 +18,9 @@ const iconMap: Record<string, any> = {
   Dna,
 };
 
-const SubjectPage: React.FC<SubjectPageProps> = ({ subject, onSelectTopic, onBack }) => {
+const SubjectPage: React.FC<SubjectPageProps> = ({ subject, onSelectTopic, onBack, language }) => {
   const Icon = iconMap[subject.icon] || Beaker;
+  const t = (key: string) => translations[key]?.[language] || key;
 
   return (
     <div className="relative min-h-screen grainy">
@@ -29,7 +32,7 @@ const SubjectPage: React.FC<SubjectPageProps> = ({ subject, onSelectTopic, onBac
           className="flex items-center gap-3 text-slate-500 hover:text-white transition-colors mb-20 group"
         >
           <ArrowLeft size={18} className="group-hover:-translate-x-1 transition-transform" />
-          <span className="text-[10px] font-mono uppercase tracking-[0.3em]">Back to Subjects</span>
+          <span className="text-[10px] font-mono uppercase tracking-[0.3em]">{t('backToSubjects')}</span>
         </motion.button>
 
         <header className="mb-24">
@@ -82,7 +85,7 @@ const SubjectPage: React.FC<SubjectPageProps> = ({ subject, onSelectTopic, onBac
               
               <div className="flex items-center gap-6 shrink-0">
                 <div className="hidden md:flex flex-col items-end">
-                  <span className="text-[9px] font-mono uppercase tracking-[0.2em] text-slate-600 group-hover:text-slate-400 transition-colors">Initialize</span>
+                  <span className="text-[9px] font-mono uppercase tracking-[0.2em] text-slate-600 group-hover:text-slate-400 transition-colors">{t('initializeModule')}</span>
                   <span className="text-[9px] font-mono uppercase tracking-[0.2em] text-slate-800">Module</span>
                 </div>
                 <div className="w-12 h-12 rounded-full border border-white/10 flex items-center justify-center group-hover:border-primary transition-colors">

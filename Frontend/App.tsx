@@ -16,8 +16,10 @@ import TopicPage from './components/TopicPage';
 import GestureController from './components/GestureController';
 import { ELEMENTS, SUBJECTS } from './constants';
 import { ElementData, Subject, Topic, ViewState, TopicId } from './types';
-import { Sparkles, MessageSquare, X, Settings, Eye, Moon, Sun } from 'lucide-react';
+import { Sparkles, MessageSquare, X, Settings, Eye, Moon, Sun, Languages } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
+import { Language, translations } from './translations';
+
 
 const App: React.FC = () => {
   const [selectedElement, setSelectedElement] = useState<ElementData>(ELEMENTS[0]);
@@ -28,6 +30,7 @@ const App: React.FC = () => {
   const [showSettings, setShowSettings] = useState(false);
   const [theme, setTheme] = useState<'dark' | 'light'>('dark');
   const [colorBlindMode, setColorBlindMode] = useState(false);
+  const [language, setLanguage] = useState<Language>('en');
   const [isGestureActive, setIsGestureActive] = useState(false);
   const [atomRotation, setAtomRotation] = useState({ dx: 0, dy: 0 });
   const [gesturePos, setGesturePos] = useState<{ x: number, y: number } | null>(null);
@@ -47,6 +50,8 @@ const App: React.FC = () => {
       document.body.classList.remove('colorblind-mode');
     }
   }, [colorBlindMode]);
+
+  const t = (key: string) => translations[key]?.[language] || key;
 
   const handleSelectSubject = (subject: Subject) => {
     setSelectedSubject(subject);
@@ -81,51 +86,51 @@ const App: React.FC = () => {
             </div>
           </div>
         );
-      case TopicId.MOLECULAR_STRUCTURE:
-        return (
-          <div className="grid grid-cols-1 h-full gap-8 bg-[#020617] overflow-y-auto p-8">
-            <div className="w-full">
-              <BondingLab />
-            </div>
-            <div className="w-full">
-              <GeometryLab />
-            </div>
-          </div>
-        );
-      case TopicId.QUANTUM_NUMBERS:
-        return (
-          <div className="h-full overflow-y-auto p-8">
-            <QuantumNumbersLab />
-          </div>
-        );
+      // case TopicId.MOLECULAR_STRUCTURE:
+      //   return (
+      //     <div className="grid grid-cols-1 h-full gap-8 bg-[#020617] overflow-y-auto p-8">
+      //       <div className="w-full">
+      //         <BondingLab />
+      //       </div>
+      //       <div className="w-full">
+      //         <GeometryLab />
+      //       </div>
+      //     </div>
+      //   );
+      // case TopicId.QUANTUM_NUMBERS:
+      //   return (
+      //     <div className="h-full overflow-y-auto p-8">
+      //       <QuantumNumbersLab />
+      //     </div>
+      //   );
       case TopicId.PERIODIC_TRENDS:
         return (
           <div className="grid grid-cols-1 h-full gap-8 bg-[#020617] overflow-y-auto p-8">
             <div className="w-full">
               <TrendsVisualizer />
             </div>
-            <div className="w-full">
+            {/* <div className="w-full">
               <ElementComparison />
-            </div>
+            </div> */}
           </div>
         );
-      case TopicId.HISTORICAL_MODELS:
-        return (
-          <div className="h-full overflow-y-auto p-8">
-            <HistoricalModels />
-          </div>
-        );
-      case TopicId.QUANTUM_CONFIG:
-        return (
-          <div className="grid grid-cols-1 h-full gap-8 bg-[#020617] overflow-y-auto p-8">
-            <div className="w-full">
-              <QuantumConfigLab element={selectedElement} />
-            </div>
-            <div className="w-full">
-              <AufbauChart atomicNumber={selectedElement.number} />
-            </div>
-          </div>
-        );
+      // case TopicId.HISTORICAL_MODELS:
+      //   return (
+      //     <div className="h-full overflow-y-auto p-8">
+      //       <HistoricalModels />
+      //     </div>
+      //   );
+      // case TopicId.QUANTUM_CONFIG:
+      //   return (
+      //     <div className="grid grid-cols-1 h-full gap-8 bg-[#020617] overflow-y-auto p-8">
+      //       <div className="w-full">
+      //         <QuantumConfigLab element={selectedElement} />
+      //       </div>
+      //       <div className="w-full">
+      //         <AufbauChart atomicNumber={selectedElement.number} />
+      //       </div>
+      //     </div>
+      //   );
       default:
         return (
           <div className="flex flex-col items-center justify-center h-full text-slate-400 p-12 text-center">
@@ -184,7 +189,7 @@ const App: React.FC = () => {
             exit={{ opacity: 0 }}
             className="flex-1"
           >
-            <LandingPage onSelectSubject={handleSelectSubject} />
+            <LandingPage onSelectSubject={handleSelectSubject} language={language} />
           </motion.div>
         )}
 
@@ -200,6 +205,7 @@ const App: React.FC = () => {
               subject={selectedSubject}
               onSelectTopic={handleSelectTopic}
               onBack={handleBackToLanding}
+              language={language}
             />
           </motion.div>
         )}
@@ -216,6 +222,7 @@ const App: React.FC = () => {
               topic={selectedTopic}
               onBack={handleBackToSubject}
               visualization={renderVisualization(selectedTopic.id)}
+              language={language}
             />
           </motion.div>
         )}
@@ -242,14 +249,14 @@ const App: React.FC = () => {
           >
             <h3 className="text-xs font-mono uppercase tracking-[0.3em] text-indigo-400 mb-6 flex items-center gap-2">
               <Eye size={12} />
-              Accessibility
+              {t('accessibility')}
             </h3>
             
             <div className="space-y-4">
               <div className="flex items-center justify-between p-3 rounded-2xl bg-white/5 border border-white/5">
                 <div className="flex flex-col">
-                  <span className="text-[10px] font-mono uppercase tracking-widest text-slate-300">Colorblind Mode</span>
-                  <span className="text-[8px] font-mono text-slate-500">Enhanced contrast</span>
+                  <span className="text-[10px] font-mono uppercase tracking-widest text-slate-300">{t('colorblindMode')}</span>
+                  <span className="text-[8px] font-mono text-slate-500">{t('enhancedContrast')}</span>
                 </div>
                 <button
                   onClick={() => setColorBlindMode(!colorBlindMode)}
@@ -265,8 +272,8 @@ const App: React.FC = () => {
 
               <div className="flex items-center justify-between p-3 rounded-2xl bg-white/5 border border-white/5">
                 <div className="flex flex-col">
-                  <span className="text-[10px] font-mono uppercase tracking-widest text-slate-300">Theme</span>
-                  <span className="text-[8px] font-mono text-slate-500">{theme === 'dark' ? 'Dark' : 'Light'} Visuals</span>
+                  <span className="text-[10px] font-mono uppercase tracking-widest text-slate-300">{t('theme')}</span>
+                  <span className="text-[8px] font-mono text-slate-500">{theme === 'dark' ? t('dark') : t('light')} Visuals</span>
                 </div>
                 <button
                   onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
@@ -274,6 +281,28 @@ const App: React.FC = () => {
                 >
                   {theme === 'dark' ? <Moon size={16} /> : <Sun size={16} />}
                 </button>
+              </div>
+
+               <div className="flex flex-col gap-3 p-3 rounded-2xl bg-white/5 border border-white/5">
+                <div className="flex items-center gap-2">
+                  <Languages size={12} className="text-indigo-400" />
+                  <span className="text-[10px] font-mono uppercase tracking-widest text-slate-300">{t('language')}</span>
+                </div>
+                <div className="grid grid-cols-3 gap-2">
+                  {(['en', 'bn', 'hi'] as Language[]).map((lang) => (
+                    <button
+                      key={lang}
+                      onClick={() => setLanguage(lang)}
+                      className={`py-2 rounded-lg text-[10px] font-mono uppercase tracking-widest transition-all ${
+                        language === lang 
+                          ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/20' 
+                          : 'bg-slate-800 text-slate-500 hover:text-slate-300'
+                      }`}
+                    >
+                      {lang}
+                    </button>
+                  ))}
+                </div>
               </div>
             </div>
           </motion.div>
@@ -295,11 +324,11 @@ const App: React.FC = () => {
       </button>
 
       {/* AI Tutor Panel */}
-      <div className={`fixed bottom-28 right-8 w-[450px] h-[600px] z-[100] transition-all duration-500 origin-bottom-right ${
+      {/* <div className={`fixed bottom-28 right-8 w-[450px] h-[600px] z-[100] transition-all duration-500 origin-bottom-right ${
         showAITutor ? 'scale-100 opacity-100 translate-y-0' : 'scale-90 opacity-0 translate-y-10 pointer-events-none'
       }`}>
         <AITutor currentElement={selectedElement} />
-      </div>
+      </div> */}
 
       <GestureController 
         isActive={isGestureActive}
