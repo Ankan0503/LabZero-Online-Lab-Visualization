@@ -15,10 +15,14 @@
     "axios": "^1.15.0",
     "d3": "^7.9.0",
     "framer-motion": "^12.38.0",
+    "katex": "^0.16.45",
     "lucide-react": "^0.577.0",
+    "motion": "^12.38.0",
     "react": "^19.2.3",
     "react-dom": "^19.2.3",
-    "react-markdown": "^10.1.0"
+    "react-katex": "^3.1.0",
+    "react-markdown": "^10.1.0",
+    "recharts": "^3.8.1"
   },
   "devDependencies": {
     "@types/d3": "^7.4.3",

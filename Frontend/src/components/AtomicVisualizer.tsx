@@ -90,7 +90,7 @@ const AtomVisualizer: React.FC<AtomVisualizerProps> = ({ element, rotation }) =>
     const availableSpace = (width / 2) - innerPadding - outerPadding;
     const spacing = numShells > 1 ? availableSpace / (numShells - 1) : 0;
 
-    element.electrons.forEach((count, i) => {
+    element.electrons.forEach((count: number, i: number) => {
       const rx = innerPadding + (i * spacing);
       const ry = is3D ? rx * 0.35 : rx;
       const rot = is3D ? (i * 25) : 0;
