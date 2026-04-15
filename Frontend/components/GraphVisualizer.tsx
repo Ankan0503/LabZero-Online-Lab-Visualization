@@ -28,7 +28,7 @@ const GraphVisualizer: React.FC = () => {
   const handlePlot = () => {
     try {
       // ⚠️ eval used carefully for learning project
-      const func = new Function('x', `return ${expression}`);
+      const func = new Function('x', `return ${expression}`) as (x: number) => number;
       setData(generateData(func));
     } catch {
       alert('Invalid expression!');
