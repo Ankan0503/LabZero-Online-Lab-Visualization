@@ -164,3 +164,7 @@ button {
 button:hover {
   transform: scale(1.05);
 }
+.light-mode {
+  background: #f8fafc;
+  color: #0f172a;
+}
