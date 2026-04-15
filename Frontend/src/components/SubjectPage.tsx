@@ -1,8 +1,8 @@
 import React from 'react';
-import { Subject, Topic } from '../types';
+import { Subject, Topic } from '../types/types';
 import { ArrowLeft, ArrowRight, Beaker, Zap, Calculator, Dna } from 'lucide-react';
 import { motion } from 'motion/react';
-import { Language, translations } from '../translations';
+import { Language, translations } from '../services/translations';
 
 interface SubjectPageProps {
   subject: Subject;

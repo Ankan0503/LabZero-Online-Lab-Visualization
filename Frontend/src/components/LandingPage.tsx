@@ -1,9 +1,9 @@
 import React from 'react';
-import { Subject } from '../types';
-import { SUBJECTS } from '../constants';
+import { Subject } from '../types/types';
+import { SUBJECTS } from '../utils/constants';
 import { Beaker, Zap, Calculator, Dna, ArrowRight, Globe, Sparkles } from 'lucide-react';
 import { motion } from 'motion/react';
-import { Language, translations } from '../translations';
+import { Language, translations } from '../services/translations';
 
 interface LandingPageProps {
   onSelectSubject: (subject: Subject) => void;

@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { Topic, TopicView, Resource } from '../types';
+import { Topic, TopicView, Resource } from '../types/types';
+import { Language, translations } from '../services/translations';
 import { ArrowLeft, BookOpen, Play, Sparkles, FileText, Trash2, Download, Presentation, GraduationCap, Volume2, VolumeX } from 'lucide-react';
+import { motion, AnimatePresence } from 'motion/react';
 import ReactMarkdown from 'react-markdown';
 // import ResourceUpload from './ResourceUpload';
 // import ResourceViewer from './ResourceViewer';
 // import Classroom from './Classroom';
 // import { getResourcesByTopic, deleteResource } from '../services/resourceService';
-import { motion, AnimatePresence } from 'motion/react';
-import { Language, translations } from '../translations';
 
 interface TopicPageProps {
   topic: Topic;

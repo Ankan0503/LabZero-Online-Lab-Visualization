@@ -1,7 +1,7 @@
 
 import React, { useEffect, useRef, useState } from 'react';
 import * as d3 from 'd3';
-import { ElementData } from './types';
+import { ElementData } from '../types/types';
 
 interface AtomVisualizerProps {
   element: ElementData;
@@ -205,7 +205,7 @@ const AtomVisualizer: React.FC<AtomVisualizerProps> = ({ element, rotation }) =>
           </div>
           <div className="flex items-center gap-3 text-[9px] font-black uppercase tracking-widest text-white/40 bg-white/5 px-4 py-2 rounded-2xl border border-white/5 backdrop-blur-sm">
             <div className="flex gap-0.5">
-               {element.electrons.slice(0, 4).map((_: any, i: number) => (
+               {element.electrons.slice(0, 4).map((_, i) => (
                  <span key={i} className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: shellColors[i] }}></span>
                ))}
                {element.electrons.length > 4 && <span className="text-[8px] text-white/40 ml-1">+</span>}

@@ -1,0 +1,83 @@
+from enum import unique
+from django.db import models
+
+class Element(models.Model):
+    CATEGORY_CHOICES = [
+        ('nonmetal', 'Nonmetal'),
+        ('noble-gas', 'Noble Gas'),
+        ('alkali-metal', 'Alkali Metal'),
+        ('alkaline-earth-metal', 'Alkaline Earth Metal'),
+        ('metalloid', 'Metalloid'),
+        ('halogen', 'Halogen'),
+        ('post-transition-metal', 'Post-transition Metal'),
+        ('transition-metal', 'Transition Metal'),
+        ('lanthanide', 'Lanthanide'),
+        ('actinide', 'Actinide'),
+    ]
+
+    number = models.PositiveIntegerField(unique=True)
+    symbol = models.CharField(max_length=3,unique=True)
+    name = models.CharField(max_length=50, unique=True)
+    mass = models.DecimalField(max_digits=10, decimal_places=4)
+    category = models.CharField(
+        max_length=50,
+        choices=CATEGORY_CHOICES
+    )
+    electrons = models.JSONField()
+    discovery = models.CharField(max_length=100, null=True, blank=True)
+    color = models.CharField(max_length=7)
+    config = models.CharField(max_length=100)
+    radius = models.IntegerField()
+    ionization = models.FloatField(null=True, blank=True)
+    electronegativity = models.FloatField(null=True, blank=True)
+    period = models.IntegerField()
+    group = models.IntegerField(null=True, blank=True)
+    summary = models.TextField()
+
+    def __str__(self):
+        return f"{self.number}. {self.name} ({self.symbol})"
+
+'''
+class Molecule(models.Model):
+    formula = models.CharField(max_length=50, unique=True)
+    name = models.CharField(max_length=100, unique=True)
+    central_atom = models.CharField(max_length=5)
+    real_angle = models.DecimalField(
+        max_digits=6,
+        decimal_places=3,
+        help_text = "The actual Bond Angle in dgrees"
+        )
+    model_angle = models.DecimalField(
+        max_digits=6,
+        decimal_places=3,
+        help_text = "The model Bond Angle in degrees"
+        )
+
+    def __str__(self):
+        return f"{self.name} ({self.formula})"
+
+
+class AtomPosition(models.Model):
+    molecule = models.ForeignKey(Molecule, related_name='atoms', on_delete=models.CASCADE)
+    symbol = models.CharField(max_length=3)
+    x = models.FloatField()
+    y = models.FloatField()
+    z = models.FloatField()
+    
+    def __str__(self):
+        return f"{self.symbol} in {self.molecule.formula} at ({self.x}, {self.y}, {self.z})"
+
+
+class LonePair(models.Model):
+    molecule = models.ForeignKey(
+        Molecule, 
+        related_name='lone_pairs', 
+        on_delete=models.CASCADE
+        ) 
+    x = models.FloatField()
+    y = models.FloatField()
+    z = models.FloatField()
+
+    def __str__(self):
+        return f"Lone Pair for {self.molecule.formula}"
+'''

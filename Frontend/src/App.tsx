@@ -11,18 +11,22 @@ import TrendsVisualizer from './components/TrendsVisualizer';
 // import QuantumConfigLab from './components/QuantumConfigLab';
 // import QuantumNumbersLab from './components/QuantumNumbersLab';
 import LandingPage from './components/LandingPage';
+import { getElements } from './services/elementsService';;
+import GraphVisualizer from './components/GraphVisualizer';
 import SubjectPage from './components/SubjectPage';
 import TopicPage from './components/TopicPage';
 import GestureController from './components/GestureController';
-import { ELEMENTS, SUBJECTS } from './constants';
-import { ElementData, Subject, Topic, ViewState, TopicId } from './types';
+import { ELEMENTS, SUBJECTS } from './utils/constants';
+import { ElementData, Subject, Topic, ViewState, TopicId } from './types/types';
 import { Sparkles, MessageSquare, X, Settings, Eye, Moon, Sun, Languages } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Language, translations } from './translations';
+import { Language, translations } from './services/translations';
 
 
 const App: React.FC = () => {
-  const [selectedElement, setSelectedElement] = useState<ElementData>(ELEMENTS[0]);
+  const [elements, setElements] = useState<ElementData[]>([]);
+  const [selectedElement, setSelectedElement] = useState<ElementData | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
   const [viewState, setViewState] = useState<ViewState>(ViewState.LANDING);
   const [selectedSubject, setSelectedSubject] = useState<Subject | null>(null);
   const [selectedTopic, setSelectedTopic] = useState<Topic | null>(null);
@@ -35,6 +39,28 @@ const App: React.FC = () => {
   const [atomRotation, setAtomRotation] = useState({ dx: 0, dy: 0 });
   const [gesturePos, setGesturePos] = useState<{ x: number, y: number } | null>(null);
 
+  // ✅ Backend status (merged safely)
+  const [message, setMessage] = useState("Loading...");
+
+  useEffect(() => {
+    fetch('http://127.0.0.1:8000/api/status/')
+      .then(res => res.json())
+      .then(data => setMessage(data.status))
+      .catch(err => setMessage("Backend offline"));
+      
+    // Fetch elements from the database via elementService
+    getElements()
+      .then(data => {
+        if (data && data.length > 0) {
+          setElements(data);
+          setSelectedElement(data[0]); 
+        }
+      })
+      .catch(err => console.error("Failed to fetch elements from DB:", err))
+      .finally(() => setIsLoading(false));
+  }, []);
+
+  // 🌗 Theme handling
   useEffect(() => {
     if (theme === 'light') {
       document.body.classList.add('light-mode');
@@ -74,15 +100,43 @@ const App: React.FC = () => {
   };
 
   const renderVisualization = (topicId: TopicId) => {
+    if (isLoading) {
+      return (
+        <div className="flex flex-col items-center justify-center h-full text-slate-400 p-12 text-center">
+          <div className="w-16 h-16 rounded-full border-4 border-indigo-500/20 border-t-indigo-500 animate-spin mb-6" />
+          <h3 className="text-xl font-bold text-white mb-2 uppercase tracking-tighter italic">Initializing Engine...</h3>
+          <p className="max-w-md mx-auto text-sm font-mono uppercase tracking-widest opacity-50">
+            Establishing neural link to backend database
+          </p>
+        </div>
+      );
+    }
+
+    if (elements.length === 0) {
+      return (
+        <div className="flex flex-col items-center justify-center h-full text-rose-400 p-12 text-center">
+          <X size={48} className="mb-6 opacity-50" />
+          <h3 className="text-xl font-bold text-white mb-2 uppercase tracking-tighter italic">Connection Failed</h3>
+          <p className="max-w-md mx-auto text-sm font-mono uppercase tracking-widest opacity-80 text-rose-300">
+            Unable to fetch element data. Please ensure the Django backend is running.
+          </p>
+        </div>
+      );
+    }
+
     switch (topicId) {
       case TopicId.ATOMIC_STRUCTURE:
         return (
           <div className="flex flex-col h-full">
             <div className="flex-1 min-h-0">
-              <AtomVisualizer element={selectedElement} rotation={atomRotation} />
+              {selectedElement && <AtomVisualizer element={selectedElement} rotation={atomRotation} />}
             </div>
             <div className="h-[420px] border-t border-white/5 bg-slate-950/50 backdrop-blur-xl overflow-y-auto">
-              <PeriodicTable onSelect={setSelectedElement} selectedSymbol={selectedElement.symbol} />
+            <PeriodicTable
+              elements={elements}
+              onSelect={setSelectedElement}
+              selectedSymbol={selectedElement?.symbol || ''}
+            />
             </div>
           </div>
         );
