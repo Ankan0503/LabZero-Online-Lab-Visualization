@@ -40,8 +40,6 @@ export enum TopicId {
   MECHANICS = 'mechanics',
   CALCULUS = 'calculus',
   GENETICS = 'genetics',
-  ALGEBRA = "algebra",
-  TRIGONOMETRY = "trigonometry",
 }
 
 export interface Topic {
@@ -111,4 +109,20 @@ export interface DiscussionComment {
   author: string;
   content: string;
   timestamp: number;
+}
+
+export type UserRole = 'student' | 'teacher' | 'institute';
+
+export interface User {
+  id: string;
+  name: string;
+  email: string;
+  role: UserRole;
+}
+
+export interface GlossaryTerm {
+  id: string;
+  term: string;
+  definition: string;
+  subject: SubjectId;
 }

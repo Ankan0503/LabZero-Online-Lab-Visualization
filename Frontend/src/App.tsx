@@ -2,13 +2,13 @@ import React, { useState, useEffect } from 'react';
 import AtomVisualizer from './components/AtomicVisualizer';
 import PeriodicTable from './components/PeriodicTable';
 // import AITutor from './components/AITutor';
-// import AufbauChart from './components/AufbauChart';
+import AufbauChart from './components/AufbauChart';
 import TrendsVisualizer from './components/TrendsVisualizer';
 // import ElementComparison from './components/ElementComparison';
 // import BondingLab from './components/BondingLab';
 // import GeometryLab from './components/GeometryLab';
 // import HistoricalModels from './components/HistoricalModels';
-// import QuantumConfigLab from './components/QuantumConfigLab';
+import QuantumConfigLab from './components/QuantumConfigLab';
 // import QuantumNumbersLab from './components/QuantumNumbersLab';
 import LandingPage from './components/LandingPage';
 import { getElements } from './services/elementsService';;
@@ -16,22 +16,26 @@ import GraphVisualizer from './components/GraphVisualizer';
 import SubjectPage from './components/SubjectPage';
 import TopicPage from './components/TopicPage';
 import GestureController from './components/GestureController';
+import AuthOverlay from './components/AuthOverlay';
+import { AuthProvider, useAuth } from './AuthContext';
 import { ELEMENTS, SUBJECTS } from './utils/constants';
 import { ElementData, Subject, Topic, ViewState, TopicId } from './types/types';
 import { Sparkles, MessageSquare, X, Settings, Eye, Moon, Sun, Languages } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Language, translations } from './services/translations';
+import AuthPage from './components/AuthPage';
 
 
-const App: React.FC = () => {
-  const [elements, setElements] = useState<ElementData[]>([]);
-  const [selectedElement, setSelectedElement] = useState<ElementData | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+const AppContent: React.FC = () => {
+  const { user, isLoading: authLoading } = useAuth();
+  const [selectedElement, setSelectedElement] = useState<ElementData>(ELEMENTS[0]);
   const [viewState, setViewState] = useState<ViewState>(ViewState.LANDING);
   const [selectedSubject, setSelectedSubject] = useState<Subject | null>(null);
   const [selectedTopic, setSelectedTopic] = useState<Topic | null>(null);
   const [showAITutor, setShowAITutor] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
+  const [showGlossary, setShowGlossary] = useState(false);
+  const [showAuth, setShowAuth] = useState(false);
   const [theme, setTheme] = useState<'dark' | 'light'>('dark');
   const [colorBlindMode, setColorBlindMode] = useState(false);
   const [language, setLanguage] = useState<Language>('en');
@@ -39,28 +43,6 @@ const App: React.FC = () => {
   const [atomRotation, setAtomRotation] = useState({ dx: 0, dy: 0 });
   const [gesturePos, setGesturePos] = useState<{ x: number, y: number } | null>(null);
 
-  // ✅ Backend status (merged safely)
-  const [message, setMessage] = useState("Loading...");
-
-  useEffect(() => {
-    fetch('http://127.0.0.1:8000/api/status/')
-      .then(res => res.json())
-      .then(data => setMessage(data.status))
-      .catch(err => setMessage("Backend offline"));
-      
-    // Fetch elements from the database via elementService
-    getElements()
-      .then(data => {
-        if (data && data.length > 0) {
-          setElements(data);
-          setSelectedElement(data[0]); 
-        }
-      })
-      .catch(err => console.error("Failed to fetch elements from DB:", err))
-      .finally(() => setIsLoading(false));
-  }, []);
-
-  // 🌗 Theme handling
   useEffect(() => {
     if (theme === 'light') {
       document.body.classList.add('light-mode');
@@ -100,43 +82,15 @@ const App: React.FC = () => {
   };
 
   const renderVisualization = (topicId: TopicId) => {
-    if (isLoading) {
-      return (
-        <div className="flex flex-col items-center justify-center h-full text-slate-400 p-12 text-center">
-          <div className="w-16 h-16 rounded-full border-4 border-indigo-500/20 border-t-indigo-500 animate-spin mb-6" />
-          <h3 className="text-xl font-bold text-white mb-2 uppercase tracking-tighter italic">Initializing Engine...</h3>
-          <p className="max-w-md mx-auto text-sm font-mono uppercase tracking-widest opacity-50">
-            Establishing neural link to backend database
-          </p>
-        </div>
-      );
-    }
-
-    if (elements.length === 0) {
-      return (
-        <div className="flex flex-col items-center justify-center h-full text-rose-400 p-12 text-center">
-          <X size={48} className="mb-6 opacity-50" />
-          <h3 className="text-xl font-bold text-white mb-2 uppercase tracking-tighter italic">Connection Failed</h3>
-          <p className="max-w-md mx-auto text-sm font-mono uppercase tracking-widest opacity-80 text-rose-300">
-            Unable to fetch element data. Please ensure the Django backend is running.
-          </p>
-        </div>
-      );
-    }
-
     switch (topicId) {
       case TopicId.ATOMIC_STRUCTURE:
         return (
           <div className="flex flex-col h-full">
             <div className="flex-1 min-h-0">
-              {selectedElement && <AtomVisualizer element={selectedElement} rotation={atomRotation} />}
+              <AtomVisualizer element={selectedElement} rotation={atomRotation} />
             </div>
             <div className="h-[420px] border-t border-white/5 bg-slate-950/50 backdrop-blur-xl overflow-y-auto">
-            <PeriodicTable
-              elements={elements}
-              onSelect={setSelectedElement}
-              selectedSymbol={selectedElement?.symbol || ''}
-            />
+              <PeriodicTable onSelect={setSelectedElement} selectedSymbol={selectedElement.symbol} elements={[]} />
             </div>
           </div>
         );
@@ -157,34 +111,34 @@ const App: React.FC = () => {
       //       <QuantumNumbersLab />
       //     </div>
       //   );
-      case TopicId.PERIODIC_TRENDS:
-        return (
-          <div className="grid grid-cols-1 h-full gap-8 bg-[#020617] overflow-y-auto p-8">
-            <div className="w-full">
-              <TrendsVisualizer />
-            </div>
-            {/* <div className="w-full">
-              <ElementComparison />
-            </div> */}
-          </div>
-        );
+      // case TopicId.PERIODIC_TRENDS:
+      //   return (
+      //     <div className="grid grid-cols-1 h-full gap-8 bg-[#020617] overflow-y-auto p-8">
+      //       <div className="w-full">
+      //         <TrendsVisualizer />
+      //       </div>
+      //       <div className="w-full">
+      //         <ElementComparison />
+      //       </div>
+      //     </div>
+      //   );
       // case TopicId.HISTORICAL_MODELS:
       //   return (
       //     <div className="h-full overflow-y-auto p-8">
       //       <HistoricalModels />
       //     </div>
       //   );
-      // case TopicId.QUANTUM_CONFIG:
-      //   return (
-      //     <div className="grid grid-cols-1 h-full gap-8 bg-[#020617] overflow-y-auto p-8">
-      //       <div className="w-full">
-      //         <QuantumConfigLab element={selectedElement} />
-      //       </div>
-      //       <div className="w-full">
-      //         <AufbauChart atomicNumber={selectedElement.number} />
-      //       </div>
-      //     </div>
-      //   );
+      case TopicId.QUANTUM_CONFIG:
+        return (
+          <div className="grid grid-cols-1 h-full gap-8 bg-[#020617] overflow-y-auto p-8">
+            <div className="w-full">
+              <QuantumConfigLab element={selectedElement} />
+            </div>
+            <div className="w-full">
+              <AufbauChart atomicNumber={selectedElement.number} />
+            </div>
+          </div>
+        );
       default:
         return (
           <div className="flex flex-col items-center justify-center h-full text-slate-400 p-12 text-center">
@@ -228,6 +182,12 @@ const App: React.FC = () => {
     // Reset after a frame to avoid continuous rotation if not moving
     setTimeout(() => setAtomRotation({ dx: 0, dy: 0 }), 50);
   };
+
+  if (authLoading) return null;
+
+  if (!user) {
+    return <AuthPage />;
+  }
 
   return (
     <div className="min-h-screen flex flex-col bg-[#020617] selection:bg-indigo-500/30 transition-colors duration-400">
@@ -285,7 +245,7 @@ const App: React.FC = () => {
       {/* Accessibility Settings Toggle */}
       <button
         onClick={() => setShowSettings(!showSettings)}
-        className={`fixed bottom-8 right-28 w-16 h-16 rounded-2xl flex items-center justify-center transition-all duration-500 z-[110] ${
+        className={`fixed bottom-8 right-28 w-16 h-16 rounded-2xl hidden md:flex items-center justify-center transition-all duration-500 z-[110] ${
           showSettings ? 'bg-indigo-500 rotate-90' : 'bg-white/5 border border-white/10 hover:bg-white/10'
         }`}
       >
@@ -299,7 +259,7 @@ const App: React.FC = () => {
             initial={{ opacity: 0, y: 20, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 20, scale: 0.95 }}
-            className="fixed bottom-28 right-28 w-72 glass-panel p-6 rounded-3xl z-[110] border border-white/10 origin-bottom-right"
+            className="fixed bottom-28 right-28 w-72 glass-panel p-6 rounded-3xl z-[110] border border-white/10 origin-bottom-right hidden md:block"
           >
             <h3 className="text-xs font-mono uppercase tracking-[0.3em] text-indigo-400 mb-6 flex items-center gap-2">
               <Eye size={12} />
@@ -337,7 +297,7 @@ const App: React.FC = () => {
                 </button>
               </div>
 
-               <div className="flex flex-col gap-3 p-3 rounded-2xl bg-white/5 border border-white/5">
+              <div className="flex flex-col gap-3 p-3 rounded-2xl bg-white/5 border border-white/5">
                 <div className="flex items-center gap-2">
                   <Languages size={12} className="text-indigo-400" />
                   <span className="text-[10px] font-mono uppercase tracking-widest text-slate-300">{t('language')}</span>
@@ -366,7 +326,7 @@ const App: React.FC = () => {
       {/* AI Tutor Floating Button */}
       <button
         onClick={() => setShowAITutor(!showAITutor)}
-        className={`fixed bottom-8 right-8 w-16 h-16 rounded-2xl flex items-center justify-center shadow-2xl transition-all duration-500 z-[100] ${
+        className={`fixed bottom-8 right-8 w-16 h-16 rounded-2xl hidden md:flex items-center justify-center shadow-2xl transition-all duration-500 z-[100] ${
           showAITutor ? 'bg-rose-500 rotate-90' : 'bg-indigo-600 hover:scale-110'
         }`}
       >
@@ -378,11 +338,31 @@ const App: React.FC = () => {
       </button>
 
       {/* AI Tutor Panel */}
-      {/* <div className={`fixed bottom-28 right-8 w-[450px] h-[600px] z-[100] transition-all duration-500 origin-bottom-right ${
+      {/* <div className={`fixed bottom-28 right-8 w-full md:w-[450px] h-full md:h-[600px] z-[100] transition-all duration-500 origin-bottom-right ${
         showAITutor ? 'scale-100 opacity-100 translate-y-0' : 'scale-90 opacity-0 translate-y-10 pointer-events-none'
       }`}>
-        <AITutor currentElement={selectedElement} />
+        <AITutor currentElement={selectedElement} language={language} />
       </div> */}
+
+      {/* One-Handed UI Fallback */}
+      {/* <BottomNav 
+        currentView={viewState}
+        onNavigate={setViewState}
+        onOpenGlossary={() => setShowGlossary(true)}
+        onOpenSettings={() => setShowSettings(!showSettings)}
+        onOpenAITutor={() => setShowAITutor(!showAITutor)}
+        onOpenProfile={() => setShowAuth(true)}
+        language={language}
+      /> */}
+
+      <AnimatePresence>
+        {/* {showGlossary && (
+          <Glossary language={language} onClose={() => setShowGlossary(false)} />
+        )} */}
+        {showAuth && (
+          <AuthOverlay onClose={() => setShowAuth(false)} />
+        )}
+      </AnimatePresence>
 
       <GestureController 
         isActive={isGestureActive}
@@ -409,6 +389,14 @@ const App: React.FC = () => {
         </div>
       )}
     </div>
+  );
+};
+
+const App: React.FC = () => {
+  return (
+    <AuthProvider>
+      <AppContent />
+    </AuthProvider>
   );
 };
 
