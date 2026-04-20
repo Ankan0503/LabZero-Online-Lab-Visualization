@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import AtomVisualizer from './components/AtomicVisualizer';
 import PeriodicTable from './components/PeriodicTable';
-// import AITutor from './components/AITutor';
 import AufbauChart from './components/AufbauChart';
 import TrendsVisualizer from './components/TrendsVisualizer';
 import ElementComparison from './components/ElementComparison';
@@ -11,20 +10,20 @@ import HistoricalModels from './components/HistoricalModels';
 import QuantumConfigLab from './components/QuantumConfigLab';
 import QuantumNumbersLab from './components/QuantumNumbersLab';
 import LandingPage from './components/LandingPage';
-// import { getElements } from './services/elementsService';
-// import GraphVisualizer from './components/GraphVisualizer';
 import SubjectPage from './components/SubjectPage';
 import TopicPage from './components/TopicPage';
 import GestureController from './components/GestureController';
-import AuthOverlay from './components/AuthOverlay';
-import { AuthProvider, useAuth } from './AuthContext';
 import { ELEMENTS, SUBJECTS } from './utils/constants';
 import { ElementData, Subject, Topic, ViewState, TopicId } from './types/types';
 import { Sparkles, MessageSquare, X, Settings, Eye, Moon, Sun, Languages } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Language, translations } from './services/translations';
+import { AuthProvider, useAuth } from './AuthContext';
+import BottomNav from './components/BottomNav';
+import Glossary from './components/Glossary';
+import AuthOverlay from './components/AuthOverlay';
 import AuthPage from './components/AuthPage';
-
+import { getElements } from './services/elementsService';
 
 const AppContent: React.FC = () => {
   const { user, isLoading: authLoading } = useAuth();
@@ -42,6 +41,27 @@ const AppContent: React.FC = () => {
   const [isGestureActive, setIsGestureActive] = useState(false);
   const [atomRotation, setAtomRotation] = useState({ dx: 0, dy: 0 });
   const [gesturePos, setGesturePos] = useState<{ x: number, y: number } | null>(null);
+  const [elements, setElements] = useState<ElementData[]>(ELEMENTS);
+  const [message, setMessage] = useState("Loading...");
+
+  useEffect(() => {
+    fetch('http://127.0.0.1:8000/api/status/')
+      .then(res => res.json())
+      .then(data => setMessage(data.status))
+      .catch(err => setMessage("Backend offline"));
+      
+    // Fetch elements from the database via elementService
+    getElements()
+      .then(data => {
+        if (data && data.length > 0) {
+          setElements(data);
+          // Only change selectedElement to fetched data if it hasn't been deliberately changed
+          // Since it's an initial fetch, it's safe to just apply.
+          setSelectedElement(data[0]); 
+        }
+      })
+      .catch(err => console.error("Failed to fetch elements from DB:", err));
+  }, []);
 
   useEffect(() => {
     if (theme === 'light') {
@@ -130,12 +150,19 @@ const AppContent: React.FC = () => {
         );
       case TopicId.QUANTUM_CONFIG:
         return (
-          <div className="grid grid-cols-1 h-full gap-8 bg-[#020617] overflow-y-auto p-8">
-            <div className="w-full">
-              <QuantumConfigLab element={selectedElement} />
+          <div className="flex flex-col h-full">
+            <div className="h-[350px] border-b border-white/5 bg-slate-950/50 backdrop-blur-xl overflow-y-auto shrink-0">
+              <PeriodicTable onSelect={setSelectedElement} selectedSymbol={selectedElement.symbol} elements={[]} />
             </div>
-            <div className="w-full">
-              <AufbauChart atomicNumber={selectedElement.number} />
+            <div className="flex-1 overflow-y-auto p-8 bg-[#020617] grainy">
+              <div className="grid grid-cols-1 xl:grid-cols-4 gap-8 max-w-[1800px] mx-auto">
+                <div className="xl:col-span-3">
+                  <QuantumConfigLab element={selectedElement} />
+                </div>
+                <div className="xl:col-span-1">
+                  <AufbauChart atomicNumber={selectedElement.number} />
+                </div>
+              </div>
             </div>
           </div>
         );
@@ -337,15 +364,8 @@ const AppContent: React.FC = () => {
         )}
       </button>
 
-      {/* AI Tutor Panel */}
-      {/* <div className={`fixed bottom-28 right-8 w-full md:w-[450px] h-full md:h-[600px] z-[100] transition-all duration-500 origin-bottom-right ${
-        showAITutor ? 'scale-100 opacity-100 translate-y-0' : 'scale-90 opacity-0 translate-y-10 pointer-events-none'
-      }`}>
-        <AITutor currentElement={selectedElement} language={language} />
-      </div> */}
-
       {/* One-Handed UI Fallback */}
-      {/* <BottomNav 
+      <BottomNav 
         currentView={viewState}
         onNavigate={setViewState}
         onOpenGlossary={() => setShowGlossary(true)}
@@ -353,12 +373,12 @@ const AppContent: React.FC = () => {
         onOpenAITutor={() => setShowAITutor(!showAITutor)}
         onOpenProfile={() => setShowAuth(true)}
         language={language}
-      /> */}
+      />
 
       <AnimatePresence>
-        {/* {showGlossary && (
+        {showGlossary && (
           <Glossary language={language} onClose={() => setShowGlossary(false)} />
-        )} */}
+        )}
         {showAuth && (
           <AuthOverlay onClose={() => setShowAuth(false)} />
         )}
