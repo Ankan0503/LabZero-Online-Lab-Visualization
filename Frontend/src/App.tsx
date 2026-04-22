@@ -417,7 +417,6 @@ const AppContent: React.FC = () => {
             onRotate={handleGestureRotate}
             onSelect={handleGestureSelect}
             onPositionChange={setGesturePos}
-            onToggleAITutor={() => setShowAITutor(prev => !prev)}
             onToggleTheme={() => setTheme(prev => prev === 'dark' ? 'light' : 'dark')}
           />
 
