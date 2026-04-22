@@ -52,14 +52,14 @@ const AuthOverlay: React.FC<AuthOverlayProps> = ({ onClose }) => {
     >
       <div className="absolute inset-0 bg-[#020617]/90 backdrop-blur-md" onClick={onClose} />
       
-      <div className="relative w-full max-w-md bg-slate-950 border border-white/10 rounded-[40px] overflow-hidden shadow-2xl">
-        <div className="p-10">
+      <div className="relative w-full max-w-md sm:w-[95%] bg-slate-950 border border-white/10 rounded-[32px] sm:rounded-[40px] overflow-hidden shadow-2xl max-h-[95vh] overflow-y-auto">
+        <div className="p-6 sm:p-10">
           <div className="flex items-center justify-between mb-12">
             <div className="flex items-center gap-4">
-              <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center text-primary">
-                <User size={24} />
+              <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-primary/10 flex items-center justify-center text-primary">
+                <User size={20} />
               </div>
-              <h2 className="text-2xl font-display font-bold text-white uppercase tracking-tight">Identity Terminal</h2>
+              <h2 className="text-xl sm:text-2xl font-display font-bold text-white uppercase tracking-tight">Identity Terminal</h2>
             </div>
             <button onClick={onClose} className="text-slate-500 hover:text-white transition-colors">
               <X size={24} />
@@ -115,7 +115,7 @@ const AuthOverlay: React.FC<AuthOverlayProps> = ({ onClose }) => {
                 <form onSubmit={handleSubmit} className="space-y-6">
                   {!isLogin && (
                     <div className="space-y-3">
-                      <div className="grid grid-cols-2 gap-3">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                         <input
                           type="text"
                           placeholder="FIRST NAME"
@@ -183,7 +183,7 @@ const AuthOverlay: React.FC<AuthOverlayProps> = ({ onClose }) => {
                         key={r.id}
                         type="button"
                         onClick={() => setRole(r.id as UserRole)}
-                        className={`p-5 rounded-3xl border transition-all text-left flex items-center gap-4 ${
+                        className={`p-4 sm:p-5 rounded-3xl border transition-all text-left flex items-center gap-4 ${
                           role === r.id 
                             ? 'bg-primary/20 border-primary text-white shadow-lg shadow-primary/10' 
                             : 'bg-white/5 border-white/5 text-slate-400 hover:border-white/20'
