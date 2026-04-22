@@ -316,6 +316,7 @@ const AppContent: React.FC = () => {
                   onLoginClick={() => setShowAuth(true)}
                   onLogoutClick={logout}
                   onProfileClick={() => setShowAuth(true)}
+                  onOpenGlossary={() => setShowGlossary(true)}
                 />
               </motion.div>
             )}

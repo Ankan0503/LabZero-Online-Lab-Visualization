@@ -1,7 +1,7 @@
 import React from 'react';
 import { Subject } from '../types/types';
 import { SUBJECTS } from '../utils/constants';
-import { Beaker, Zap, Calculator, Dna, ArrowRight, Globe, Sparkles, User as UserIcon, LogOut } from 'lucide-react';
+import { Beaker, Zap, Calculator, Dna, ArrowRight, Globe, Sparkles, User as UserIcon, LogOut, BookOpen, Search } from 'lucide-react';
 import { motion } from 'motion/react';
 import { Language, translations } from '../services/translations';
 
@@ -12,6 +12,7 @@ interface LandingPageProps {
   onLoginClick?: () => void;
   onLogoutClick?: () => void;
   onProfileClick?: () => void;
+  onOpenGlossary?: () => void;
 }
 
 const iconMap: Record<string, any> = {
@@ -27,7 +28,8 @@ const LandingPage: React.FC<LandingPageProps> = ({
   user,
   onLoginClick,
   onLogoutClick,
-  onProfileClick
+  onProfileClick,
+  onOpenGlossary
 }) => {
   const t = (key: string) => translations[key]?.[language] || key;
   return (
@@ -157,6 +159,47 @@ const LandingPage: React.FC<LandingPageProps> = ({
             );
           })}
         </div>
+
+        <section className="mt-12">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7, delay: 1 }}
+            className="relative overflow-hidden rounded-[32px] border border-white/10 bg-white/[0.03] p-8 md:p-10"
+          >
+            <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(circle_at_top_right,rgba(99,102,241,0.18),transparent_35%),radial-gradient(circle_at_bottom_left,rgba(244,63,94,0.12),transparent_30%)]" />
+            <div className="relative flex flex-col gap-8 lg:flex-row lg:items-end lg:justify-between">
+              <div className="max-w-2xl">
+                <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-amber-400/20 bg-amber-400/10 px-4 py-2">
+                  <BookOpen size={14} className="text-amber-300" />
+                  <span className="text-[10px] font-mono uppercase tracking-[0.3em] text-amber-200">Glossary Hub</span>
+                </div>
+                <h3 className="text-3xl md:text-4xl font-display font-bold tracking-tight text-white">
+                  Open the science glossary from the home screen
+                </h3>
+                <p className="mt-4 max-w-xl text-sm md:text-base text-slate-400 leading-relaxed">
+                  Search quick definitions for chemistry, physics, biology, and math terms before entering a lab.
+                </p>
+              </div>
+
+              <div className="flex flex-wrap gap-3">
+                <div className="rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-[10px] font-mono uppercase tracking-[0.25em] text-slate-300">
+                  Offline Terms
+                </div>
+                <div className="rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-[10px] font-mono uppercase tracking-[0.25em] text-slate-300">
+                  Searchable
+                </div>
+                <button
+                  onClick={onOpenGlossary}
+                  className="inline-flex items-center gap-3 rounded-2xl bg-amber-500 px-6 py-4 text-[10px] font-mono uppercase tracking-[0.25em] text-slate-950 transition-all hover:bg-amber-400"
+                >
+                  <Search size={14} />
+                  Open Glossary
+                </button>
+              </div>
+            </div>
+          </motion.div>
+        </section>
 
         <footer className="mt-32 pt-12 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-8">
           <div className="text-[10px] font-mono uppercase tracking-[0.3em] text-slate-600">
