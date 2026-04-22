@@ -80,7 +80,7 @@ const AuthPage: React.FC = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-[#020617] flex items-center justify-center p-4 relative overflow-hidden">
+    <div className="min-h-screen bg-[#020617] flex items-center justify-center p-2 sm:p-4 relative overflow-hidden">
       {/* Background decoration */}
       <div className="absolute top-0 left-0 w-full h-full pointer-events-none overflow-hidden">
         <div className="absolute -top-[10%] -left-[10%] w-[40%] h-[40%] bg-blue-600/10 blur-[120px] rounded-full animate-pulse" />
@@ -91,7 +91,7 @@ const AuthPage: React.FC = () => {
       <motion.div 
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="relative w-full max-w-5xl grid grid-cols-1 lg:grid-cols-2 bg-slate-950/50 backdrop-blur-3xl border border-white/10 rounded-[48px] overflow-hidden shadow-2xl"
+        className="relative w-full max-w-5xl grid grid-cols-1 lg:grid-cols-2 bg-slate-950/50 backdrop-blur-3xl border border-white/10 rounded-3xl md:rounded-[48px] overflow-hidden shadow-2xl"
       >
         {/* Left Side - Info Art */}
         <div className="hidden lg:flex flex-col justify-between p-12 bg-gradient-to-br from-indigo-600 via-indigo-700 to-blue-900 text-white relative overflow-hidden">
@@ -141,24 +141,24 @@ const AuthPage: React.FC = () => {
         </div>
 
         {/* Right Side - Auth Form */}
-        <div className="p-8 md:p-12 lg:p-16 flex flex-col justify-center">
+        <div className="p-6 md:p-12 lg:p-16 flex flex-col justify-center">
           <div className="mb-10">
-            <div className="flex items-center gap-1 p-1 bg-white/5 rounded-2xl w-fit mb-8 border border-white/5">
+            <div className="flex items-center gap-1 p-1 bg-white/5 rounded-2xl w-full sm:w-fit mb-8 border border-white/5">
               <button 
                 onClick={() => setIsLogin(true)}
-                className={`px-8 py-2.5 rounded-xl text-[10px] font-mono uppercase tracking-widest transition-all ${isLogin ? 'bg-indigo-600 text-white shadow-lg' : 'text-slate-500 hover:text-white'}`}
+                className={`flex-1 sm:px-8 py-2.5 rounded-xl text-[10px] font-mono uppercase tracking-widest transition-all ${isLogin ? 'bg-indigo-600 text-white shadow-lg' : 'text-slate-500 hover:text-white'}`}
               >
                 Login
               </button>
               <button 
                 onClick={() => setIsLogin(false)}
-                className={`px-8 py-2.5 rounded-xl text-[10px] font-mono uppercase tracking-widest transition-all ${!isLogin ? 'bg-indigo-600 text-white shadow-lg' : 'text-slate-500 hover:text-white'}`}
+                className={`flex-1 sm:px-8 py-2.5 rounded-xl text-[10px] font-mono uppercase tracking-widest transition-all ${!isLogin ? 'bg-indigo-600 text-white shadow-lg' : 'text-slate-500 hover:text-white'}`}
               >
                 Sign Up
               </button>
             </div>
 
-            <h2 className="text-3xl font-display font-bold text-white uppercase tracking-tight mb-2">
+            <h2 className="text-2xl md:text-3xl font-display font-bold text-white uppercase tracking-tight mb-2">
               {isLogin ? 'Welcome Back' : 'Get Started'}
             </h2>
             <p className="text-sm text-slate-500 font-light">
@@ -235,7 +235,7 @@ const AuthPage: React.FC = () => {
 
               {!isLogin && selectedRole !== 'institute' && (
                 <div className="space-y-4">
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="relative group">
                       <UserIcon className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500 group-focus-within:text-indigo-500 transition-colors" />
                       <input
