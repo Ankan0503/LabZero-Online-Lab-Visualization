@@ -404,13 +404,30 @@ const AppContent: React.FC = () => {
             {showAuth && <AuthOverlay onClose={() => setShowAuth(false)} />}
           </AnimatePresence>
 
-          <GestureController
+          <GestureController 
             isActive={isGestureActive}
-            onToggle={() => setIsGestureActive(prev => !prev)}
+            onToggle={() => setIsGestureActive(!isGestureActive)}
             onBack={handleGestureBack}
+            onScroll={handleGestureScroll}
             onRotate={handleGestureRotate}
+            onSelect={handleGestureSelect}
             onPositionChange={setGesturePos}
+            onToggleAITutor={() => setShowAITutor(prev => !prev)}
+            onToggleTheme={() => setTheme(prev => prev === 'dark' ? 'light' : 'dark')}
           />
+
+          {isGestureActive && gesturePos && (
+            <div 
+              className="fixed w-8 h-8 rounded-full border-2 border-indigo-500 bg-indigo-500/20 pointer-events-none z-[200] flex items-center justify-center shadow-[0_0_20px_rgba(99,102,241,0.5)] transition-transform duration-75"
+              style={{ 
+                left: `${gesturePos.x * 100}%`, 
+                top: `${gesturePos.y * 100}%`,
+                transform: 'translate(-50%, -50%)'
+              }}
+            >
+              <div className="w-1 h-1 bg-white rounded-full" />
+            </div>
+          )}
         </>
       )}
     </div>

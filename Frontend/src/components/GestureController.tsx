@@ -33,7 +33,14 @@ const GestureController: React.FC<GestureControllerProps> = ({
   const gestureRecognizerRef = useRef<GestureRecognizer | null>(null);
   const lastVideoTimeRef = useRef(-1);
   const lastGestureTimeRef = useRef(0);
+  const lastProcessingTimeRef = useRef(0);
+  
   const GESTURE_DEBOUNCE = 1500;
+  const TARGET_FPS = 30;
+  const FRAME_INTERVAL = 1000 / TARGET_FPS;
+  const SMOOTHING_FACTOR = 0.35;
+  const SAFE_AREA = 0.05; // 5% border
+  
   const [isLoaded, setIsLoaded] = useState(false);
   const [currentGesture, setCurrentGesture] = useState<string>('None');
   const [handPosition, setHandPosition] = useState<{ x: number, y: number } | null>(null);
@@ -62,7 +69,13 @@ const GestureController: React.FC<GestureControllerProps> = ({
     const startCamera = async () => {
       if (isActive && videoRef.current) {
         try {
-          stream = await navigator.mediaDevices.getUserMedia({ video: true });
+          stream = await navigator.mediaDevices.getUserMedia({ 
+            video: { 
+              width: 640, 
+              height: 480,
+              frameRate: { ideal: TARGET_FPS }
+            } 
+          });
           videoRef.current.srcObject = stream;
           videoRef.current.addEventListener('loadeddata', predictGestures);
         } catch (err) {
@@ -75,18 +88,47 @@ const GestureController: React.FC<GestureControllerProps> = ({
       if (!isRunning || !videoRef.current || !gestureRecognizerRef.current) return;
 
       const nowInMs = Date.now();
+      
+      // Frame skipping / FPS Control
+      if (nowInMs - lastProcessingTimeRef.current < FRAME_INTERVAL) {
+        if (isActive && isRunning) {
+          requestAnimationFrame(predictGestures);
+        }
+        return;
+      }
+
       if (videoRef.current.currentTime !== lastVideoTimeRef.current && videoRef.current.videoWidth > 0 && videoRef.current.videoHeight > 0) {
         lastVideoTimeRef.current = videoRef.current.currentTime;
+        lastProcessingTimeRef.current = nowInMs;
+        
         try {
           const results = gestureRecognizerRef.current.recognizeForVideo(videoRef.current, nowInMs);
           
           if (results.gestures.length > 0) {
             const gesture = results.gestures[0][0].categoryName;
-            setCurrentGesture(gesture);
-
             const landmarks = results.landmarks[0];
             const indexTip = landmarks[8];
-            const currentPos = { x: 1 - indexTip.x, y: indexTip.y };
+            
+            // Safe Area Check
+            if (indexTip.x < SAFE_AREA || indexTip.x > (1 - SAFE_AREA) || indexTip.y < SAFE_AREA || indexTip.y > (1 - SAFE_AREA)) {
+              // Out of bounds, ignore
+              return;
+            }
+
+            // Normalization & Smoothing
+            const rawX = 1 - indexTip.x;
+            const rawY = indexTip.y;
+            
+            let smoothX = rawX;
+            let smoothY = rawY;
+            
+            if (lastHandPosRef.current) {
+              smoothX = lastHandPosRef.current.x + (rawX - lastHandPosRef.current.x) * SMOOTHING_FACTOR;
+              smoothY = lastHandPosRef.current.y + (rawY - lastHandPosRef.current.y) * SMOOTHING_FACTOR;
+            }
+
+            const currentPos = { x: smoothX, y: smoothY };
+            setCurrentGesture(gesture);
             setHandPosition(currentPos);
             onPositionChange?.(currentPos);
 
@@ -227,7 +269,7 @@ const GestureController: React.FC<GestureControllerProps> = ({
                   autoPlay
                   playsInline
                   muted
-                  className="absolute inset-0 w-full h-full object-cover opacity-30 grayscale contrast-125"
+                  className="absolute inset-0 w-full h-full object-cover opacity-30 grayscale contrast-125 -scale-x-100"
                 />
                 <div className="absolute inset-0 bg-indigo-500/10 mix-blend-overlay" />
                 <div className="absolute top-0 left-0 w-full h-px bg-indigo-500/20 animate-[scan_2s_linear_infinite]" />

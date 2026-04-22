@@ -178,7 +178,7 @@ const biologyPool: Question[] = [
 // ======================
 // 🎯 MAIN GENERATOR
 // ======================
-export const generateQuizAI = (subject: string): Question[] => {
+export const generateQuizAI = (subject: string, quizLevel: string): Question[] => {
   let pool: Question[] = [];
 
   switch (subject) {
