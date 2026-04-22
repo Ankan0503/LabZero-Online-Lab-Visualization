@@ -275,14 +275,6 @@ const AppContent: React.FC = () => {
             )}
           </AnimatePresence>
 
-          {/* AI BUTTON */}
-          <button
-            onClick={() => setShowAITutor(prev => !prev)}
-            className="fixed bottom-8 right-8 w-16 h-16 bg-indigo-600 rounded-2xl flex items-center justify-center"
-          >
-            {showAITutor ? <X /> : <MessageSquare />}
-          </button>
-
           {/* SETTINGS */}
           <button
             onClick={() => setShowSettings(prev => !prev)}

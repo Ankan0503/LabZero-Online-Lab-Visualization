@@ -13,6 +13,7 @@ interface Props {
   onExit: () => void;
 }
 
+<
 const QuizPage: React.FC<Props> = ({ questions, onExit }) => {
 
   const [current, setCurrent] = useState(0);
