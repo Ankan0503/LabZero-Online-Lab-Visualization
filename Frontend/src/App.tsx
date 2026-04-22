@@ -202,13 +202,33 @@ const AppContent: React.FC = () => {
   }, [elements, selectedElement, atomRotation]);
 
   // ================= GESTURES =================
-  const handleGestureRotate = (dx: number, dy: number) => {
-    setAtomRotation({ dx, dy });
+  const handleGestureSelect = () => {
+    // This is a bit complex since we don't have the exact coordinates in this component easily
+    // But we can trigger a generic "Click" or use a ref from GestureController
+    // For now, let's assume GestureController handles the coordinate-based click if we pass it a ref
   };
 
   const handleGestureBack = () => {
-    if (viewState === ViewState.TOPIC) handleBackToSubject();
-    else if (viewState === ViewState.SUBJECT) handleBackToLanding();
+    if (viewState === ViewState.TOPIC) {
+      handleBackToSubject();
+    } else if (viewState === ViewState.SUBJECT) {
+      handleBackToLanding();
+    }
+  };
+
+  const handleGestureScroll = (delta: number) => {
+    window.scrollBy({ top: delta, behavior: 'smooth' });
+    // Also scroll any scrollable containers
+    const scrollable = document.querySelector('.overflow-y-auto');
+    if (scrollable) {
+      scrollable.scrollBy({ top: delta, behavior: 'smooth' });
+    }
+  };
+
+  const handleGestureRotate = (dx: number, dy: number) => {
+    setAtomRotation({ dx, dy });
+    // Reset after a frame to avoid continuous rotation if not moving
+    setTimeout(() => setAtomRotation({ dx: 0, dy: 0 }), 50);
   };
 
   // ================= AUTH =================
@@ -290,21 +310,85 @@ const AppContent: React.FC = () => {
             )}
           </AnimatePresence>
 
-          {/* AI BUTTON */}
-          <button
-            onClick={() => setShowAITutor(prev => !prev)}
-            className="fixed bottom-8 right-8 w-16 h-16 bg-indigo-600 rounded-2xl flex items-center justify-center"
-          >
-            {showAITutor ? <X /> : <MessageSquare />}
-          </button>
-
           {/* SETTINGS */}
           <button
-            onClick={() => setShowSettings(prev => !prev)}
-            className="fixed bottom-8 right-28 w-16 h-16 bg-white/10 rounded-2xl flex items-center justify-center"
+            onClick={() => setShowSettings(!showSettings)}
+            className={`fixed bottom-8 right-28 w-16 h-16 rounded-2xl hidden md:flex items-center justify-center transition-all duration-500 z-[110] ${
+              showSettings ? 'bg-indigo-500 rotate-90' : 'bg-white/5 border border-white/10 hover:bg-white/10'
+            }`}
           >
-            <Settings />
+            <Settings size={24} className={showSettings ? 'text-white' : 'text-slate-400'} />
           </button>
+
+          <AnimatePresence>
+            {showSettings && (
+              <motion.div
+                initial={{ opacity: 0, y: 20, scale: 0.95 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: 20, scale: 0.95 }}
+                className="fixed bottom-24 md:bottom-28 left-4 right-4 md:left-auto md:right-28 md:w-72 glass-panel p-6 rounded-3xl z-[110] border border-white/10 origin-bottom-right mx-auto max-w-[calc(100vw-32px)]"
+              >
+                <h3 className="text-xs font-mono uppercase tracking-[0.3em] text-indigo-400 mb-6 flex items-center gap-2">
+                  <Eye size={12} />
+                  {t('accessibility')}
+                </h3>
+                
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between p-3 rounded-2xl bg-white/5 border border-white/5">
+                    <div className="flex flex-col">
+                      <span className="text-[10px] font-mono uppercase tracking-widest text-slate-300">{t('colorblindMode')}</span>
+                      <span className="text-[8px] font-mono text-slate-500">{t('enhancedContrast')}</span>
+                    </div>
+                    <button
+                      onClick={() => setColorBlindMode(!colorBlindMode)}
+                      className={`w-10 h-5 rounded-full relative transition-colors duration-300 ${
+                        colorBlindMode ? 'bg-indigo-500' : 'bg-slate-800'
+                      }`}
+                    >
+                      <div className={`absolute top-1 w-3 h-3 rounded-full bg-white transition-all duration-300 ${
+                        colorBlindMode ? 'left-6' : 'left-1'
+                      }`} />
+                    </button>
+                  </div>
+
+                  <div className="flex items-center justify-between p-3 rounded-2xl bg-white/5 border border-white/5">
+                    <div className="flex flex-col">
+                      <span className="text-[10px] font-mono uppercase tracking-widest text-slate-300">{t('theme')}</span>
+                      <span className="text-[8px] font-mono text-slate-500">{theme === 'dark' ? t('dark') : t('light')} Visuals</span>
+                    </div>
+                    <button
+                      onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+                      className="w-10 h-10 rounded-xl bg-slate-800 flex items-center justify-center text-slate-400 hover:text-white transition-colors"
+                    >
+                      {theme === 'dark' ? <Moon size={16} /> : <Sun size={16} />}
+                    </button>
+                  </div>
+
+                  <div className="flex flex-col gap-3 p-3 rounded-2xl bg-white/5 border border-white/5">
+                    <div className="flex items-center gap-2">
+                      <Languages size={12} className="text-indigo-400" />
+                      <span className="text-[10px] font-mono uppercase tracking-widest text-slate-300">{t('language')}</span>
+                    </div>
+                    <div className="grid grid-cols-3 gap-2">
+                      {(['en', 'bn', 'hi'] as Language[]).map((lang) => (
+                        <button
+                          key={lang}
+                          onClick={() => setLanguage(lang)}
+                          className={`py-2 rounded-lg text-[10px] font-mono uppercase tracking-widest transition-all ${
+                            language === lang 
+                              ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/20' 
+                              : 'bg-slate-800 text-slate-500 hover:text-slate-300'
+                          }`}
+                        >
+                          {lang}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
 
           <BottomNav
             currentView={viewState}
