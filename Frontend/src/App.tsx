@@ -58,6 +58,9 @@ const AppContent: React.FC = () => {
 
   const [isGestureActive, setIsGestureActive] = useState(false);
   const [atomRotation, setAtomRotation] = useState({ dx: 0, dy: 0 });
+  const [atomZoom, setAtomZoom] = useState(1);
+  const [moleculeRotation, setMoleculeRotation] = useState({ dx: 0, dy: 0 });
+  const [moleculeZoom, setMoleculeZoom] = useState(1);
   const [gesturePos, setGesturePos] = useState<{ x: number; y: number } | null>(null);
 
   // ================= QUIZ =================
@@ -135,7 +138,11 @@ const AppContent: React.FC = () => {
         return (
           <div className="flex flex-col h-full overflow-hidden">
             <div className="flex-[3] relative min-h-[300px]">
-              <AtomVisualizer element={selectedElement} rotation={atomRotation} />
+              <AtomVisualizer
+                element={selectedElement}
+                rotation={atomRotation}
+                zoom={atomZoom}
+              />
             </div>
             <div className="flex-[2] border-t border-white/5 overflow-y-auto bg-black/40">
               <PeriodicTable
@@ -188,7 +195,7 @@ const AppContent: React.FC = () => {
               <BondingLab />
             </section>
             <section className="max-w-7xl mx-auto">
-              <GeometryLab />
+              <GeometryLab rotation={moleculeRotation} zoom={moleculeZoom} />
             </section>
           </div>
         );
@@ -255,9 +262,23 @@ const AppContent: React.FC = () => {
   };
 
   const handleGestureRotate = (dx: number, dy: number) => {
+    if (selectedTopic?.id === TopicId.MOLECULAR_STRUCTURE) {
+      setMoleculeRotation({ dx, dy });
+      setTimeout(() => setMoleculeRotation({ dx: 0, dy: 0 }), 50);
+      return;
+    }
+
     setAtomRotation({ dx, dy });
-    // Reset after a frame to avoid continuous rotation if not moving
     setTimeout(() => setAtomRotation({ dx: 0, dy: 0 }), 50);
+  };
+
+  const handleGestureZoom = (delta: number) => {
+    if (selectedTopic?.id === TopicId.MOLECULAR_STRUCTURE) {
+      setMoleculeZoom((prev) => Math.min(1.8, Math.max(0.7, prev + delta * 0.00012)));
+      return;
+    }
+
+    setAtomZoom((prev) => Math.min(1.8, Math.max(0.7, prev + delta * 0.00012)));
   };
 
   // ================= AUTH =================
@@ -431,6 +452,7 @@ const AppContent: React.FC = () => {
             onBack={handleGestureBack}
             onScroll={handleGestureScroll}
             onRotate={handleGestureRotate}
+            onZoom={handleGestureZoom}
             onSelect={handleGestureSelect}
             onPositionChange={setGesturePos}
             onToggleTheme={() => setTheme(prev => prev === 'dark' ? 'light' : 'dark')}

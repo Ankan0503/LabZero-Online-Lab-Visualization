@@ -435,27 +435,35 @@ const GestureController: React.FC<GestureControllerProps> = ({
             const indexTip   = lm[8];
             const thumbTip   = lm[4];
 
-            // Safe-area guard
-            if (indexTip.x < SAFE || indexTip.x > 1 - SAFE ||
-                indexTip.y < SAFE || indexTip.y > 1 - SAFE) {
-              raf = requestAnimationFrame(loop); return;
-            }
-
-            // Smoothed, mirrored position
-            const rawX = 1 - indexTip.x;
-            const rawY = indexTip.y;
-            const prev = lastHandPosRef.current;
-            const sx   = prev ? prev.x + (rawX - prev.x) * SMOOTH : rawX;
-            const sy   = prev ? prev.y + (rawY - prev.y) * SMOOTH : rawY;
-            const pos  = { x: sx, y: sy };
-
-            // ── Pinch override (landmark-based) ───────────────────────────
             const pinchDist  = Math.hypot(
               (1 - thumbTip.x) - (1 - indexTip.x),
               thumbTip.y - indexTip.y,
             );
             const isPinching = pinchDist < PINCH_THRESHOLD;
             const gesture: GestureId = isPinching ? 'Pinch' : rawGesture;
+            const trackingPoint =
+              gesture === 'Closed_Fist'
+                ? (lm[9] ?? lm[0])
+                : gesture === 'Pinch'
+                  ? {
+                      x: (thumbTip.x + indexTip.x) / 2,
+                      y: (thumbTip.y + indexTip.y) / 2,
+                    }
+                  : indexTip;
+
+            // Safe-area guard
+            if (trackingPoint.x < SAFE || trackingPoint.x > 1 - SAFE ||
+                trackingPoint.y < SAFE || trackingPoint.y > 1 - SAFE) {
+              raf = requestAnimationFrame(loop); return;
+            }
+
+            // Smoothed, mirrored position
+            const rawX = 1 - trackingPoint.x;
+            const rawY = trackingPoint.y;
+            const prev = lastHandPosRef.current;
+            const sx   = prev ? prev.x + (rawX - prev.x) * SMOOTH : rawX;
+            const sy   = prev ? prev.y + (rawY - prev.y) * SMOOTH : rawY;
+            const pos  = { x: sx, y: sy };
 
             setCurrentGesture(gesture);
             setConfidence(conf);
@@ -557,7 +565,7 @@ const GestureController: React.FC<GestureControllerProps> = ({
               setActiveMode('ZOOM');
               if (lastPinchDistRef.current !== null) {
                 const delta = pinchDist - lastPinchDistRef.current;
-                if (Math.abs(delta) > 0.003) onZoom?.(delta * 4000);
+                if (Math.abs(delta) > 0.003) onZoom?.(delta * 1500);
               }
 
             } else {

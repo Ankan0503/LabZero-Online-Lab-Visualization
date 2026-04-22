@@ -1,9 +1,9 @@
-import React, { useState, useMemo } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { OrbitControls, PerspectiveCamera, Float, Text, ContactShadows, Environment } from '@react-three/drei';
 import * as THREE from 'three';
 import { MOLECULES } from '../utils/constants';
-import { Vector3 as Vector3Type, Molecule } from '../types/types';
+import { Molecule } from '../types/types';
 
 // --- Sub-Components ---
 
@@ -60,16 +60,35 @@ const LonePair = ({ pos }: { pos: [number, number, number] }) => (
 
 // --- Main Lab Component ---
 
-const GeometryLab: React.FC = () => {
+interface GeometryLabProps {
+  rotation?: { dx: number; dy: number };
+  zoom?: number;
+}
+
+const GeometryLab: React.FC<GeometryLabProps> = ({ rotation, zoom = 1 }) => {
   const [selectedMolecule, setSelectedMolecule] = useState<Molecule>(MOLECULES[0]);
   const [mode, setMode] = useState<'Real' | 'Model'>('Real');
   const [showLonePairs, setShowLonePairs] = useState(true);
   const [showBondAngles, setShowBondAngles] = useState(true);
+  const moleculeGroupRef = useRef<THREE.Group>(null);
 
   const atomColors: Record<string, string> = {
     O: '#ef4444', H: '#f1f5f9', C: '#334155', N: '#3b82f6',Cl: '#84cc16',P: '#f97316',Be: '#94a3b8',
     Br: '#991b1b',F: '#10b981', Xe: '#a855f7', S: '#facc15', B: '#8b5cf6', central: '#f97316'
   };
+
+  useEffect(() => {
+    if (!rotation || !moleculeGroupRef.current) return;
+
+    moleculeGroupRef.current.rotation.y += rotation.dx * 0.0035;
+    moleculeGroupRef.current.rotation.x += rotation.dy * 0.0035;
+  }, [rotation]);
+
+  useEffect(() => {
+    if (!moleculeGroupRef.current) return;
+
+    moleculeGroupRef.current.scale.setScalar(zoom);
+  }, [zoom]);
 
   return (
     <div className="glass-panel rounded-[40px] p-8 border border-white/10 space-y-10 select-none animate-in fade-in duration-1000 bg-slate-900/50">
@@ -119,7 +138,7 @@ const GeometryLab: React.FC = () => {
           <Environment preset="city" />
 
           <Float speed={2} rotationIntensity={0.5} floatIntensity={0.5}>
-  <group>
+  <group ref={moleculeGroupRef}>
     {/* Central Atom */}
     <Atom 
       pos={[0, 0, 0]} 

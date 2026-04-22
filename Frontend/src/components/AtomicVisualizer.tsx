@@ -6,9 +6,10 @@ import { ElementData } from '../types/types';
 interface AtomVisualizerProps {
   element: ElementData;
   rotation?: { dx: number, dy: number };
+  zoom?: number;
 }
 
-const AtomVisualizer: React.FC<AtomVisualizerProps> = ({ element, rotation }) => {
+const AtomVisualizer: React.FC<AtomVisualizerProps> = ({ element, rotation, zoom = 1 }) => {
   const svgRef = useRef<SVGSVGElement | null>(null);
   const [is3D, setIs3D] = useState(false);
   const [manualRotation, setManualRotation] = useState({ x: 0, y: 0 });
@@ -47,7 +48,10 @@ const AtomVisualizer: React.FC<AtomVisualizerProps> = ({ element, rotation }) =>
     const centerY = height / 2;
 
     const g = svg.append("g")
-      .attr("transform", `translate(0, 0) rotate(${manualRotation.x}, ${centerX}, ${centerY})`);
+      .attr(
+        "transform",
+        `translate(${centerX}, ${centerY}) scale(${zoom}) rotate(${manualRotation.x}) skewX(${manualRotation.y * 0.08}) translate(${-centerX}, ${-centerY})`
+      );
 
     // Gradients & Filters
     const defs = svg.append("defs");
@@ -145,7 +149,7 @@ const AtomVisualizer: React.FC<AtomVisualizerProps> = ({ element, rotation }) =>
       }
     });
 
-  }, [element, is3D, manualRotation]);
+  }, [element, is3D, manualRotation, zoom]);
 
   const valenceColor = shellColors[(element.electrons.length - 1) % shellColors.length];
 
