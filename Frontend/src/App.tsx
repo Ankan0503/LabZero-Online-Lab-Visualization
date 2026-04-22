@@ -395,7 +395,6 @@ const AppContent: React.FC = () => {
             onNavigate={setViewState}
             onOpenGlossary={() => setShowGlossary(!showGlossary)}
             onOpenSettings={() => setShowSettings(!showSettings)}
-            onOpenAITutor={() => setShowAITutor(!showAITutor)}
             onOpenProfile={() => setShowAuth(!showAuth)}
             onToggleGesture={() => setIsGestureActive(!isGestureActive)}
             isGestureActive={isGestureActive}
