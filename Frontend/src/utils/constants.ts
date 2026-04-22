@@ -449,4 +449,48 @@ export const MOLECULES: Molecule[] = [
     realAngle: '109.5°',
     modelAngle: '109.5°',
   },
+  {
+    formula: 'BF3',
+    name: 'Boron Trifluoride',
+    centralAtom: 'B',
+    atoms: [
+      { symbol: 'F', pos: { x: 0, y: 1, z: 0 } },
+      { symbol: 'F', pos: { x: 0.86, y: -0.5, z: 0 } },
+      { symbol: 'F', pos: { x: -0.86, y: -0.5, z: 0 } },
+    ],
+    lonePairs: [],
+    realAngle: '120°',
+    modelAngle: '120°',
+  },
+  {
+    formula: 'SF6',
+    name: 'Sulfur Hexafluoride',
+    centralAtom: 'S',
+    atoms: [
+      { symbol: 'F', pos: { x: 0, y: 1.2, z: 0 } },
+      { symbol: 'F', pos: { x: 0, y: -1.2, z: 0 } },
+      { symbol: 'F', pos: { x: 1.2, y: 0, z: 0 } },
+      { symbol: 'F', pos: { x: -1.2, y: 0, z: 0 } },
+      { symbol: 'F', pos: { x: 0, y: 0, z: 1.2 } },
+      { symbol: 'F', pos: { x: 0, y: 0, z: -1.2 } },
+    ],
+    lonePairs: [],
+    realAngle: '90°, 180°',
+    modelAngle: '90° (Octahedral)',
+  },
+  {
+    formula: 'PCl5',
+    name: 'Phosphorus Pentachloride',
+    centralAtom: 'P',
+    atoms: [
+      { symbol: 'Cl', pos: { x: 0, y: 1.2, z: 0 } },
+      { symbol: 'Cl', pos: { x: 0, y: -1.2, z: 0 } },
+      { symbol: 'Cl', pos: { x: 1.2, y: 0, z: 0 } },
+      { symbol: 'Cl', pos: { x: -1.2, y: 0, z: 0 } },
+      { symbol: 'Cl', pos: { x: 0, y: 0, z: 1.2 } },
+    ],
+    lonePairs: [],
+    realAngle: '90°, 120°',
+    modelAngle: '90°, 120° (Trigonal Bipyramidal)',
+  }
 ];
