@@ -119,34 +119,36 @@ const GeometryLab: React.FC = () => {
           <Environment preset="city" />
 
           <Float speed={2} rotationIntensity={0.5} floatIntensity={0.5}>
-            <group>
-              {/* Central Atom */}
-              <Atom 
-                pos={[0, 0, 0]} 
-                symbol={selectedMolecule.centralAtom} 
-                color={atomColors[selectedMolecule.centralAtom] || atomColors.central} 
-                size={0.8} 
-              />
+  <group>
+    {/* Central Atom */}
+    <Atom 
+      pos={[0, 0, 0]} 
+      symbol={selectedMolecule.centralAtom} 
+      color={atomColors[selectedMolecule.centralAtom] || atomColors.central} 
+      size={0.8} 
+    />
 
-              {/* Outer Atoms and Bonds */}
-              {selectedMolecule.atoms.map((atom, i) => (
-                <React.Fragment key={i}>
-                  <Bond from={[0, 0, 0]} to={[atom.pos.x * 2.5, atom.pos.y * 2.5, atom.pos.z * 2.5]} />
-                  <Atom 
-                    pos={[atom.pos.x * 2.5, atom.pos.y * 2.5, atom.pos.z * 2.5]} 
-                    symbol={atom.symbol} 
-                    color={atomColors[atom.symbol]} 
-                    size={0.5} 
-                  />
-                </React.Fragment>
-              ))}
+    {/* Dynamic Outer Atoms and Bonds */}
+    {selectedMolecule.atoms.map((atom, i) => {
+      // Logic: Model mode uses a standard spacing (2.5), 
+      // Real mode adds a slight offset to simulate electronic distortion
+      const multiplier = mode === 'Model' ? 2.5 : 2.7; 
+      const pos: [number, number, number] = [atom.pos.x * multiplier, atom.pos.y * multiplier, atom.pos.z * multiplier];
+      
+      return (
+        <React.Fragment key={i}>
+          <Bond from={[0, 0, 0]} to={pos} />
+          <Atom pos={pos} symbol={atom.symbol} color={atomColors[atom.symbol]} size={0.5} />
+        </React.Fragment>
+      );
+    })}
 
-              {/* Lone Pairs */}
-              {showLonePairs && selectedMolecule.lonePairs.map((lp, i) => (
-                <LonePair key={i} pos={[lp.x * 2, lp.y * 2, lp.z * 2]} />
-              ))}
-            </group>
-          </Float>
+    {/* Lone Pairs */}
+    {showLonePairs && selectedMolecule.lonePairs.map((lp, i) => (
+      <LonePair key={i} pos={[lp.x * 2, lp.y * 2, lp.z * 2]} />
+    ))}
+  </group>
+</Float>
 
           <ContactShadows opacity={0.4} scale={15} blur={2.5} far={4.5} />
         </Canvas>
@@ -170,7 +172,7 @@ const GeometryLab: React.FC = () => {
              </div>
              <div className="flex justify-between items-end">
                <span className="text-[10px] font-bold text-white/30 uppercase pb-1">Dynamics</span>
-               <span className="text-4xl font-black text-white">
+               <span className="text-2xl font-black text-white">
                  {mode === 'Real' ? selectedMolecule.realAngle : selectedMolecule.modelAngle}
                </span>
              </div>
