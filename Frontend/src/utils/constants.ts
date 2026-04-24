@@ -206,7 +206,51 @@ For a circle with radius r = 1:
 
 As n approaches infinity, **Perimeter → 2π**.
   `
-}
+},
+
+{
+    id: TopicId.COMPLEX_NUMBERS,
+    name: 'Complex Numbers & Rotation',
+    description: 'Explore the Argand plane and watch how multiplying by imaginary numbers rotates space.',
+    theory: `
+# The Argand Plane
+A complex number like **Z = a + bi** has two parts: a Real part (a) and an Imaginary part (b). Instead of a standard XY graph, we plot these on the **Argand Plane**, where the X-axis is Real and the Y-axis is Imaginary.
+
+## The Magic of 'i'
+The imaginary unit **i** is defined as the square root of -1 (**i² = -1**). 
+But geometrically, multiplying any number by **i** does exactly one thing: it rotates that number perfectly **90 degrees counter-clockwise** around the origin!
+
+* 1 × i = **i** (90° rotation)
+* i × i = **-1** (180° rotation)
+* -1 × i = **-i** (270° rotation)
+* -i × i = **1** (360° back to the start)
+
+## CSE Application
+Complex numbers are the mathematical engine behind signal processing (Fourier Transforms). Every time your phone compresses an MP3 file or processes a JPEG image, it is using complex numbers to analyze frequencies!
+    `
+  },
+  {
+    id: TopicId.PYTHAGORAS_THEOREM,
+    name: 'Pythagorean Theorem',
+    description: 'Adjust the base and height of a triangle to visualize how the hypotenuse is calculated.',
+    theory: `
+# The Pythagorean Theorem
+In any right-angled triangle, the square of the longest side (the hypotenuse) is equal to the sum of the squares of the other two sides.
+
+## The Formula
+**a² + b² = c²**
+
+* **a** = Base (horizontal side)
+* **b** = Height (vertical side)
+* **c** = Hypotenuse (the long diagonal side)
+
+To find the exact length of the hypotenuse, we just take the square root of that sum:
+**c = √(a² + b²)**
+
+## CSE Application
+In video game development, this exact math is used every single frame to calculate the "Distance" between two players or objects on a 2D map. It is the absolute foundation of spatial programming!
+    `
+  },
   ]
 },
   {
