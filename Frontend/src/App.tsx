@@ -22,6 +22,9 @@ import CellBiologyLab from './components/CellBiologyLab';
 
 import VectorCalculusLab from './components/VectorCalculusLab';
 import PiVisualizationLab from './components/PiVisualizationLab';
+import ComplexNumbersLab from './components/ComplexNumbersLab';
+import PythagorasLab from './components/PythagorasLab';
+
 
 import LandingPage from './components/LandingPage';
 import SubjectPage from './components/SubjectPage';
@@ -260,6 +263,18 @@ case TopicId.CELL_BIOLOGY:
   return (
     <div className="p-8 space-y-8 h-[700px]">
       <PiVisualizationLab/>
+    </div>
+  );
+  case TopicId.COMPLEX_NUMBERS:
+  return (
+    <div className="h-full overflow-hidden p-4 md:p-8 bg-[#020617]">
+      <ComplexNumbersLab />
+    </div>
+  );
+  case TopicId.PYTHAGORAS_THEOREM:
+  return (
+    <div className="h-full overflow-hidden p-4 md:p-8 bg-[#020617]">
+      <PythagorasLab />
     </div>
   );
   
