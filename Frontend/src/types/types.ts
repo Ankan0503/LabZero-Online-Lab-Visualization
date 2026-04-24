@@ -67,6 +67,7 @@ export enum ViewState {
   LANDING = 'landing',
   SUBJECT = 'subject',
   TOPIC = 'topic',
+  DASHBOARD = 'dashboard',
 }
 
 export enum TopicView {
