@@ -109,10 +109,10 @@ const AppContent: React.FC = () => {
   }, []);
 
   const handleSelectSubject = useCallback((subject: Subject) => {
-    if (!user) {
-      setShowAuth(true);
-      return;
-    }
+    // if (!user) {
+    //   setShowAuth(true);
+    //   return;
+    // }
     setSelectedSubject(subject);
     setViewState(ViewState.SUBJECT);
   }, [user]);
@@ -404,11 +404,22 @@ case TopicId.CELL_BIOLOGY:
                 className="h-full w-full overflow-y-auto p-8 flex flex-col items-center justify-center"
               >
                 <div className="max-w-6xl w-full pt-10">
-                  <div className="text-center mb-12">
-                    <h1 className="text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-indigo-400 to-cyan-400 mb-4">
-                      Welcome to LabZero
-                    </h1>
-                    <p className="text-slate-400 text-lg">Select your standard to begin the interactive journey</p>
+                  <div className="flex justify-between items-center mb-12">
+                    <div className="text-left">
+                      <h1 className="text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-indigo-400 to-cyan-400 mb-4">
+                        Welcome to LabZero
+                      </h1>
+                      <p className="text-slate-400 text-lg">Select your standard to begin the interactive journey</p>
+                    </div>
+                    {user && (user.role === 'teacher' || user.role === 'institute') && (
+                      <button 
+                        onClick={() => setViewState(ViewState.DASHBOARD)}
+                        className="px-8 py-4 bg-indigo-600 hover:bg-indigo-500 text-white rounded-2xl text-xs font-mono uppercase tracking-[0.2em] transition-all shadow-2xl shadow-indigo-500/40 flex items-center gap-3"
+                      >
+                        <BookOpen size={18} />
+                        Professional Dashboard
+                      </button>
+                    )}
                   </div>
 
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
@@ -481,7 +492,11 @@ case TopicId.CELL_BIOLOGY:
 
             {viewState === ViewState.DASHBOARD && user && (
               <motion.div key="dashboard" className="h-full w-full">
-                {user.role === 'teacher' ? <TeacherDashboard /> : <InstituteDashboard />}
+                {user.role === 'teacher' ? (
+                  <TeacherDashboard onBackToApp={() => setViewState(ViewState.LANDING)} />
+                ) : (
+                  <InstituteDashboard onBackToApp={() => setViewState(ViewState.LANDING)} />
+                )}
               </motion.div>
             )}
           </AnimatePresence>
