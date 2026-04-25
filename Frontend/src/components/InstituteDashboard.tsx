@@ -19,7 +19,11 @@ import {
 import { motion } from 'motion/react';
 import { useAuth } from '../context/AuthContext';
 
-const InstituteDashboard: React.FC = () => {
+interface InstituteDashboardProps {
+  onBackToApp?: () => void;
+}
+
+const InstituteDashboard: React.FC<InstituteDashboardProps> = ({ onBackToApp }) => {
   const { user } = useAuth();
 
   const metrics = [
@@ -58,8 +62,11 @@ const InstituteDashboard: React.FC = () => {
             <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
             Global Status: Active
           </div>
-          <button className="p-3 rounded-xl hover:bg-white/5 text-slate-400 transition-all">
-            <Search size={18} />
+          <button 
+            onClick={onBackToApp}
+            className="px-6 py-3 rounded-xl bg-white/5 border border-white/10 text-slate-400 text-[10px] font-mono uppercase tracking-widest hover:text-white transition-all"
+          >
+            Exit Console
           </button>
           <button className="px-6 py-3 rounded-xl bg-indigo-600 text-white text-[10px] font-mono uppercase tracking-widest hover:bg-indigo-500 transition-all shadow-lg shadow-indigo-500/20">
             Export Report

@@ -19,7 +19,11 @@ import {
 import { motion } from 'motion/react';
 import { useAuth } from '../context/AuthContext';
 
-const TeacherDashboard: React.FC = () => {
+interface TeacherDashboardProps {
+  onBackToApp?: () => void;
+}
+
+const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ onBackToApp }) => {
   const { user } = useAuth();
 
   const stats = [
@@ -50,8 +54,11 @@ const TeacherDashboard: React.FC = () => {
           <p className="text-slate-500 font-light text-sm">Monitor your classes and student engagement today.</p>
         </div>
         <div className="flex items-center gap-3">
-          <button className="px-6 py-3 rounded-2xl bg-white/5 border border-white/10 text-white text-xs font-medium hover:bg-white/10 transition-all">
-            Schedule Class
+          <button 
+            onClick={onBackToApp}
+            className="px-6 py-3 rounded-2xl bg-white/5 border border-white/10 text-white text-xs font-medium hover:bg-white/10 transition-all uppercase tracking-widest font-mono"
+          >
+            Exit Dashboard
           </button>
           <button className="px-6 py-3 rounded-2xl bg-indigo-600 text-white text-xs font-medium hover:bg-indigo-500 shadow-lg shadow-indigo-500/20 transition-all flex items-center gap-2">
             <Plus size={16} />
