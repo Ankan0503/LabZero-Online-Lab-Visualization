@@ -109,10 +109,10 @@ const AppContent: React.FC = () => {
   }, []);
 
   const handleSelectSubject = useCallback((subject: Subject) => {
-    // if (!user) {
-    //   setShowAuth(true);
-    //   return;
-    // }
+    if (!user) {
+      setShowAuth(true);
+      return;
+    }
     setSelectedSubject(subject);
     setViewState(ViewState.SUBJECT);
   }, [user]);
