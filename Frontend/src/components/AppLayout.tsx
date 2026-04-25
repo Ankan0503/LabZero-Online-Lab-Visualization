@@ -22,7 +22,7 @@ const AppLayout: React.FC<AppLayoutProps> = ({
   currentView
 }) => {
   return (
-    <div className="min-h-screen bg-[#020617] text-slate-200 selection:bg-indigo-500/30">
+    <div className="h-screen flex flex-col bg-[#020617] text-slate-200 selection:bg-indigo-500/30 overflow-hidden">
       {/* Dynamic Background */}
       <div className="fixed inset-0 pointer-events-none overflow-hidden z-0">
         <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-indigo-500/10 blur-[120px] rounded-full" />
@@ -68,7 +68,7 @@ const AppLayout: React.FC<AppLayoutProps> = ({
       </header>
 
       {/* Main Content Area */}
-      <main className="relative z-10 w-full min-h-[calc(100vh-73px)]">
+      <main className="relative z-10 w-full flex-1 overflow-y-auto scroll-smooth">
         <AnimatePresence mode="wait">
           <motion.div
             key={currentView}
@@ -76,7 +76,7 @@ const AppLayout: React.FC<AppLayoutProps> = ({
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
             transition={{ duration: 0.3, ease: 'easeOut' }}
-            className="h-full"
+            className="min-h-full"
           >
             {children}
           </motion.div>

@@ -1,13 +1,24 @@
 import React, { useState } from 'react';
-import { motion } from 'motion/react';
+import { motion, AnimatePresence } from 'motion/react';
 import { RotateCw, Info, Magnet, Sparkles } from 'lucide-react';
 
 const ComplexNumbersLab: React.FC = () => {
   const [point, setPoint] = useState({ x: 1, y: 0.5 });
   const [showUnitCircle, setShowUnitCircle] = useState(true);
+  const [isError, setIsError] = useState(false);
+
+  // Trigger visual error
+  const triggerError = () => {
+    setIsError(true);
+    setTimeout(() => setIsError(false), 500);
+  };
 
   // Rotate point by 90 degrees (Multiply by i)
   const rotate90 = () => {
+    if (Math.abs(point.x) < 0.01 && Math.abs(point.y) < 0.01) {
+      triggerError();
+      return;
+    }
     setPoint(prev => ({ x: -prev.y, y: prev.x }));
   };
 
@@ -19,7 +30,21 @@ const ComplexNumbersLab: React.FC = () => {
 
   return (
     <div className="flex flex-col lg:flex-row gap-8 h-full">
-      <div className="flex-1 glass-panel p-8 rounded-[40px] flex flex-col justify-center items-center relative overflow-hidden">
+      <div className={`flex-1 glass-panel p-8 rounded-[40px] flex flex-col justify-center items-center relative overflow-hidden transition-colors duration-300 ${isError ? 'bg-rose-500/20 border-rose-500/50' : ''}`}>
+        <AnimatePresence>
+          {isError && (
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0 }}
+              className="absolute inset-0 flex items-center justify-center z-50 pointer-events-none"
+            >
+               <div className="bg-rose-500 text-white px-6 py-3 rounded-2xl font-mono text-xs uppercase tracking-widest shadow-2xl">
+                 Singularity Warning: Value too small
+               </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
         <div className="absolute inset-0 opacity-10 pointer-events-none">
           <div className="w-full h-full bg-[linear-gradient(rgba(255,255,255,0.05)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.05)_1px,transparent_1px)] bg-[size:40px_40px]" />
         </div>
