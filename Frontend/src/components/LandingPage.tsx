@@ -45,7 +45,7 @@ const LandingPage: React.FC<LandingPageProps> = ({
       )
     : SUBJECTS;
   return (
-    <div className="relative min-h-screen overflow-hidden grainy">
+    <div className="relative min-h-full grainy pb-32">
       {/* Background Decorative Elements */}
       <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
         <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-primary/10 blur-[120px] rounded-full" />
@@ -237,7 +237,7 @@ const LandingPage: React.FC<LandingPageProps> = ({
 
         <footer className="mt-32 pt-12 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-8">
           <div className="text-[10px] font-mono uppercase tracking-[0.3em] text-slate-600">
-            © 2026 LabZero. All rights reserved.
+            © 2024 OmniScience Laboratory / v2.4.0
           </div>
           <div className="flex gap-8">
             <a href="#" className="text-[10px] font-mono uppercase tracking-[0.3em] text-slate-600 hover:text-primary transition-colors">Documentation</a>

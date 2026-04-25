@@ -40,7 +40,7 @@ const InstituteDashboard: React.FC<InstituteDashboardProps> = ({ onBackToApp }) 
   ];
 
   return (
-    <div className="h-full overflow-y-auto bg-[#020617] p-8 space-y-12 pb-32">
+    <div className="min-h-full bg-[#020617] p-8 space-y-12 pb-32">
       {/* Header */}
       <header className="flex flex-col lg:flex-row lg:items-center justify-between gap-8 max-w-7xl mx-auto">
         <div className="space-y-2">

@@ -40,7 +40,7 @@ const SubjectPage: React.FC<SubjectPageProps> = ({
       )
     : subject.topics;
   return (
-    <div className="relative min-h-screen grainy">
+    <div className="relative min-h-full grainy pb-32">
       <div className="max-w-7xl mx-auto px-6 py-24">
         <div className="flex items-center justify-between mb-20">
           <motion.button
