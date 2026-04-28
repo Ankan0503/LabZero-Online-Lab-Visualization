@@ -155,8 +155,8 @@ const LandingPage: React.FC<LandingPageProps> = ({
         {/* 4 Cards Grid */}
         <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
            {[
-             { name: 'Physics Engine', desc: 'Simulate motion, waves, optics, thermodynamics and more in real-time.', img: 'https://images.unsplash.com/photo-1518152006812-edab29b069ac?auto=format&fit=crop&q=80&w=400', theme: 'border-[var(--border-glass)]', iconColor: 'text-[var(--color-primary)]' },
              { name: 'Chemistry Lab', desc: 'Visualize molecules, reactions, bonding and chemical processes.', img: 'https://images.unsplash.com/photo-1532187863486-abf9dbad1b69?auto=format&fit=crop&q=80&w=400', theme: 'border-[var(--border-glass)]', iconColor: 'text-[var(--color-secondary)]' },
+             { name: 'Physics Engine', desc: 'Simulate motion, waves, optics, thermodynamics and more in real-time.', img: 'https://images.unsplash.com/photo-1518152006812-edab29b069ac?auto=format&fit=crop&q=80&w=400', theme: 'border-[var(--border-glass)]', iconColor: 'text-[var(--color-primary)]' },
              { name: 'Math Visualizer', desc: 'Graph functions, equations, matrices, vectors and surfaces interactively.', img: 'https://images.unsplash.com/photo-1509228468518-180dd4864904?auto=format&fit=crop&q=80&w=400', theme: 'border-[var(--border-glass)]', iconColor: 'text-[var(--color-accent)]' },
              { name: 'Biology Explorer', desc: 'Explore cells, systems, anatomy and biological processes in 3D.', img: 'https://images.unsplash.com/photo-1530026405186-ed1f139313f8?auto=format&fit=crop&q=80&w=400', theme: 'border-[var(--border-glass)]', iconColor: 'text-[#8b5cf6]' },
            ].map((card, i) => (
