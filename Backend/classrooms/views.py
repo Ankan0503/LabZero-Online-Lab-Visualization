@@ -18,6 +18,9 @@ class ClassroomViewSet(viewsets.ModelViewSet):
         return Classroom.objects.none()
 
     def perform_create(self, serializer):
+        if self.request.user.role != 'teacher':
+            from rest_framework.exceptions import PermissionDenied
+            raise PermissionDenied("Only accounts with the 'teacher' role can create classrooms.")
         serializer.save(teacher=self.request.user)
 
 class JoinClassroomView(APIView):

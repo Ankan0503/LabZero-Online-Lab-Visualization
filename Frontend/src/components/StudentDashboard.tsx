@@ -19,6 +19,7 @@ import {
 } from 'lucide-react';
 import { motion } from 'motion/react';
 import { useAuth } from '../context/AuthContext';
+import { classroomsService } from '../services/classroomsService';
 
 interface StudentDashboardProps {
     onBack?: () => void;
@@ -26,6 +27,48 @@ interface StudentDashboardProps {
 
 const StudentDashboard: React.FC<StudentDashboardProps> = ({ onBack }) => {
     const { user } = useAuth();
+    const [classes, setClasses] = React.useState<any[]>([]);
+    const [upcomingTasks, setUpcomingTasks] = React.useState<any[]>([]);
+    const [loading, setLoading] = React.useState(true);
+    const [isJoinModalOpen, setIsJoinModalOpen] = React.useState(false);
+    const [inviteCode, setInviteCode] = React.useState('');
+    const [isJoining, setIsJoining] = React.useState(false);
+
+    React.useEffect(() => {
+        fetchData();
+    }, []);
+
+    const fetchData = async () => {
+        try {
+            setLoading(true);
+            const [classData, assignmentData] = await Promise.all([
+                classroomsService.getClassrooms(),
+                classroomsService.getAssignments()
+            ]);
+            setClasses(classData);
+            setUpcomingTasks(assignmentData);
+        } catch (error) {
+            console.error("Error fetching dashboard data:", error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleJoinClass = async (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!inviteCode) return;
+        try {
+            setIsJoining(true);
+            await classroomsService.joinClassroom(inviteCode);
+            setIsJoinModalOpen(false);
+            setInviteCode('');
+            fetchData(); // Refresh data
+        } catch (error: any) {
+            alert(error.response?.data?.error || "Failed to join class.");
+        } finally {
+            setIsJoining(false);
+        }
+    };
 
     const achievements = [
         { name: 'Master Chemist', description: 'Complete all bonding labs', progress: 100, icon: Sparkles, color: 'text-amber-300' },
@@ -33,22 +76,21 @@ const StudentDashboard: React.FC<StudentDashboardProps> = ({ onBack }) => {
         { name: 'Lab Regular', description: '10 hours in simulations', progress: 75, icon: Clock, color: 'text-violet-300' },
     ];
 
-    const upcomingTasks = [
-        { title: 'VSEPR Theory Lab', teacher: 'Mr. Smith', dueDate: 'Friday', status: 'Pending' },
-        { title: 'Stoichiometry Quiz', teacher: 'Dr. Wilson', dueDate: 'Tomorrow', status: 'Live' },
-        { title: 'Organic Chem Notes', teacher: 'Dr. Wilson', dueDate: 'Monday', status: 'Assigned' },
-    ];
 
+    /*
     const recentLabs = [
         { name: 'Atomic Dipole Field', category: 'Physics', time: '2h ago' },
         { name: 'Molecule Builder', category: 'Chemistry', time: 'Yesterday' },
         { name: 'DNA Transcription', category: 'Biology', time: '3 days ago' },
     ];
+    */
 
+    /*
     const classes = [
         { teacher: 'Mr. Smith', subject: 'Physics Lab', items: 12, isLive: true },
         { teacher: 'Dr. Wilson', subject: 'Advanced Chem', items: 8, isLive: false },
     ];
+    */
 
     return (
         <div className="h-full overflow-y-auto bg-transparent p-8 space-y-12 pb-32 relative">
@@ -117,7 +159,10 @@ const StudentDashboard: React.FC<StudentDashboardProps> = ({ onBack }) => {
                                 <Users size={20} className="text-cyan-300 drop-shadow-[0_0_8px_rgba(34,211,238,0.5)]" />
                                 My Classrooms
                             </h2>
-                            <button className="px-4 py-2 rounded-xl bg-cyan-500/10 border border-cyan-500/20 text-cyan-300 text-[10px] font-mono uppercase tracking-widest hover:bg-cyan-500/20 transition-all">
+                            <button 
+                                onClick={() => setIsJoinModalOpen(true)}
+                                className="px-4 py-2 rounded-xl bg-cyan-500/10 border border-cyan-500/20 text-cyan-300 text-[10px] font-mono uppercase tracking-widest hover:bg-cyan-500/20 transition-all"
+                            >
                                 Join New Class
                             </button>
                         </div>
@@ -137,10 +182,10 @@ const StudentDashboard: React.FC<StudentDashboardProps> = ({ onBack }) => {
                                             Live Now
                                         </div>
                                     )}
-                                    <div className="text-[10px] font-mono text-cyan-300/60 uppercase tracking-[0.3em] mb-2">{cls.subject}</div>
-                                    <h3 className="text-lg font-display font-medium text-white mb-4 tracking-tight drop-shadow-sm">{cls.teacher}'s Lab</h3>
+                                    <div className="text-[10px] font-mono text-cyan-300/60 uppercase tracking-[0.3em] mb-2">{cls.name}</div>
+                                    <h3 className="text-lg font-display font-medium text-white mb-4 tracking-tight drop-shadow-sm">{cls.teacher_name}'s Lab</h3>
                                     <div className="flex items-center justify-between">
-                                        <span className="text-xs font-sans text-white/40 italic">{cls.items} new resources</span>
+                                        <span className="text-xs font-sans text-white/40 italic">{cls.assignments?.length || 0} tasks</span>
                                         <div className="w-8 h-8 rounded-full bg-black/40 border border-white/10 flex items-center justify-center text-white/40 group-hover:text-cyan-300 group-hover:border-cyan-400/30 transition-all">
                                             <ArrowRight size={14} />
                                         </div>
@@ -231,7 +276,7 @@ const StudentDashboard: React.FC<StudentDashboardProps> = ({ onBack }) => {
                                         <span className="text-[9px] font-mono text-white/30 uppercase tracking-widest">Due {task.dueDate}</span>
                                     </div>
                                     <h4 className="text-sm font-sans font-medium text-white mb-0.5 group-hover:text-cyan-100 transition-colors">{task.title}</h4>
-                                    <p className="text-[10px] text-white/40">{task.teacher}</p>
+                                    <p className="text-[10px] text-white/40">{task.teacher_name}</p>
                                 </div>
                             ))}
                         </div>
@@ -311,6 +356,68 @@ const StudentDashboard: React.FC<StudentDashboardProps> = ({ onBack }) => {
                     </button>
                 ))}
             </div>
+
+            {/* Join Classroom Modal */}
+            {isJoinModalOpen && (
+                <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+                    <motion.div 
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        onClick={() => setIsJoinModalOpen(false)}
+                        className="absolute inset-0 bg-black/80 backdrop-blur-sm" 
+                    />
+                    <motion.div 
+                        initial={{ opacity: 0, scale: 0.9, y: 20 }}
+                        animate={{ opacity: 1, scale: 1, y: 0 }}
+                        className="relative w-full max-w-md p-8 rounded-[40px] bg-[#0F172A] border border-white/10 shadow-2xl overflow-hidden"
+                    >
+                        <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/10 via-transparent to-violet-500/10 pointer-events-none" />
+                        
+                        <div className="relative z-10 space-y-6">
+                            <div className="space-y-2 text-center">
+                                <div className="w-16 h-16 rounded-2xl bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center text-cyan-300 mx-auto mb-4">
+                                    <Sparkles size={32} />
+                                </div>
+                                <h2 className="text-2xl font-display font-medium text-white">Join a Classroom</h2>
+                                <p className="text-sm text-white/60">Enter the 6-digit code provided by your teacher to unlock your lab access.</p>
+                            </div>
+
+                            <form onSubmit={handleJoinClass} className="space-y-4">
+                                <div className="space-y-2">
+                                    <label className="text-[10px] font-mono text-white/40 uppercase tracking-[0.2em] ml-2">Classroom Code</label>
+                                    <input 
+                                        autoFocus
+                                        type="text" 
+                                        placeholder="E.g. A7X8K1"
+                                        value={inviteCode}
+                                        onChange={(e) => setInviteCode(e.target.value.toUpperCase())}
+                                        maxLength={10}
+                                        className="w-full px-6 py-4 rounded-2xl bg-black/40 border border-white/10 text-white placeholder:text-white/20 focus:border-cyan-500/50 outline-none transition-all text-center text-xl font-mono tracking-[0.5em]"
+                                    />
+                                </div>
+
+                                <div className="flex gap-3 pt-2">
+                                    <button 
+                                        type="button"
+                                        onClick={() => setIsJoinModalOpen(false)}
+                                        className="flex-1 py-4 rounded-2xl bg-white/5 border border-white/10 text-white/60 text-[10px] font-mono uppercase tracking-widest hover:bg-white/10 transition-all"
+                                    >
+                                        Cancel
+                                    </button>
+                                    <button 
+                                        type="submit"
+                                        disabled={isJoining || inviteCode.length < 5}
+                                        className="flex-1 py-4 rounded-2xl bg-gradient-to-r from-cyan-500 to-violet-600 text-white text-[10px] font-mono uppercase tracking-widest shadow-lg shadow-cyan-500/20 disabled:opacity-50 disabled:grayscale transition-all"
+                                    >
+                                        {isJoining ? 'Connecting...' : 'Join Class'}
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </motion.div>
+                </div>
+            )}
         </div>
     );
 };

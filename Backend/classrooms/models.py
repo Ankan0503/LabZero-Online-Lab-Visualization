@@ -36,8 +36,10 @@ class Assignment(models.Model):
     classroom = models.ForeignKey(Classroom, on_delete=models.CASCADE, related_name='assignments')
     title = models.CharField(max_length=200)
     description = models.TextField(blank=True)
+    file = models.FileField(upload_to='assignments/', null=True, blank=True)
     topic = models.ForeignKey('lab_api.Topic', on_delete=models.SET_NULL, null=True, blank=True)
     due_date = models.DateTimeField(null=True, blank=True)
+    points = models.IntegerField(default=100)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='assigned')
     created_at = models.DateTimeField(auto_now_add=True)
 
