@@ -98,7 +98,7 @@ const TopicPage: React.FC<TopicPageProps> = ({ topic, onBack, visualization, lan
               <div className="flex items-center gap-2">
                 <div className="w-1 h-1 rounded-full bg-primary animate-pulse" />
                 <span className="text-[9px] font-mono text-slate-500 uppercase tracking-[0.3em]">
-                  Module ID: {topic.id.split('_').join('-')}
+                  Module ID: {String(topic.id).split('_').join('-')}
                 </span>
               </div>
             </div>

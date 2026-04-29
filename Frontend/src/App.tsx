@@ -46,6 +46,7 @@ import { Language, translations } from './services/translations';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { getElements } from './services/elementsService';
 import { getMolecules } from './services/moleculesService';
+import { getSubjects } from './services/subjectsService';
 
 
 const BackgroundLayer = ({ theme }: { theme: 'dark' | 'light' }) => (
@@ -88,6 +89,7 @@ const AppContent: React.FC = () => {
   const [elements, setElements] = useState<ElementData[]>([]);
   const [selectedElement, setSelectedElement] = useState<ElementData | null>(null);
   const [molecules, setMolecules] = useState<Molecule[]>([]);
+  const [subjects, setSubjects] = useState<Subject[]>([]);
 
   const [viewState, setViewState] = useState<ViewState>(ViewState.LANDING);
   const [selectedSubject, setSelectedSubject] = useState<Subject | null>(null);
@@ -124,11 +126,19 @@ const AppContent: React.FC = () => {
         }
       })
       .catch(console.error);
-      
+
     getMolecules()
       .then((data) => {
         if (data?.length) {
           setMolecules(data);
+        }
+      })
+      .catch(console.error);
+
+    getSubjects()
+      .then((data) => {
+        if (data?.length) {
+          setSubjects(data);
         }
       })
       .catch(console.error);
@@ -190,9 +200,9 @@ const AppContent: React.FC = () => {
   };
 
   // ================= VISUALIZATION =================
-  const renderVisualization = useCallback((topicId: TopicId) => {
-    switch (topicId) {
-      case TopicId.ATOMIC_STRUCTURE:
+  const renderVisualization = useCallback((topicSlug: string) => {
+    switch (topicSlug) {
+      case 'atomic_structure':
         if (!selectedElement) return <div className="p-10 text-center text-white">Loading Element Data...</div>;
         return (
           <div className="flex flex-col h-full overflow-hidden">
@@ -213,7 +223,7 @@ const AppContent: React.FC = () => {
           </div>
         );
 
-      case TopicId.QUANTUM_CONFIG:
+      case 'quantum_config':
         if (!selectedElement) return <div className="p-10 text-center text-white">Loading Element Data...</div>;
         return (
           <div className="flex flex-col h-full overflow-hidden">
@@ -236,7 +246,7 @@ const AppContent: React.FC = () => {
           </div>
         );
 
-      case TopicId.PERIODIC_TRENDS:
+      case 'periodic_trends':
         return (
           <div className="h-full overflow-y-auto p-4 md:p-8 space-y-12 bg-[#020617]">
             <section className="max-w-7xl mx-auto">
@@ -248,7 +258,7 @@ const AppContent: React.FC = () => {
           </div>
         );
 
-      case TopicId.MOLECULAR_STRUCTURE:
+      case 'molecular_structure':
         return (
           <div className="h-full overflow-y-auto p-4 md:p-8 space-y-12 bg-[#020617]">
             <section className="max-w-7xl mx-auto">
@@ -260,21 +270,21 @@ const AppContent: React.FC = () => {
           </div>
         );
 
-      case TopicId.QUANTUM_NUMBERS:
+      case 'quantum_numbers':
         return (
           <div className="h-full overflow-y-auto">
             <QuantumNumbersLab />
           </div>
         );
 
-      case TopicId.HISTORICAL_MODELS:
+      case 'historical_models':
         return (
           <div className="h-full overflow-y-auto">
             <HistoricalModels />
           </div>
         );
 
-      case TopicId.MECHANICS:
+      case 'mechanics':
         return (
           <div className="h-full overflow-y-auto p-4 md:p-8 bg-[#020617]">
             <div className="max-w-7xl mx-auto">
@@ -283,7 +293,7 @@ const AppContent: React.FC = () => {
           </div>
         );
 
-      case TopicId.ELECTROMAGNETISM:
+      case 'Electromagnetism':
         return (
           <div className="h-full overflow-y-auto p-4 md:p-8 bg-[#020617]">
             <div className="max-w-7xl mx-auto">
@@ -292,38 +302,38 @@ const AppContent: React.FC = () => {
           </div>
         );
 
-      case TopicId.MICROBIOLOGY:
+      case 'MICROBIOLOGY':
         return (
           <div className="p-8 space-y-8 h-[700px]">
             <MicrobiologyLab />
           </div>
         );
 
-      case TopicId.CELL_BIOLOGY:
+      case 'CELL_BIOLOGY':
         return (
           <div className="p-8 space-y-8 h-[700px]">
             <CellBiologyLab />
           </div>
         );
-      case TopicId.VECTOR_CALCULUS:
+      case 'VECTOR_CALCULUS':
         return (
           <div className="p-8 space-y-8 h-[700px]">
             <VectorCalculusLab />
           </div>
         );
-      case TopicId.PI_APPROXIMATION:
+      case 'PI_APPROXIMATION':
         return (
           <div className="p-8 space-y-8 h-[700px]">
             <PiVisualizationLab />
           </div>
         );
-      case TopicId.COMPLEX_NUMBERS:
+      case 'COMPLEX_NUMBERS':
         return (
           <div className="h-full overflow-hidden p-4 md:p-8 bg-[#020617]">
             <ComplexNumbersLab />
           </div>
         );
-      case TopicId.PYTHAGORAS_THEOREM:
+      case 'PYTHAGORAS_THEOREM':
         return (
           <div className="h-full overflow-hidden p-4 md:p-8 bg-[#020617]">
             <PythagorasLab />
@@ -445,6 +455,7 @@ const AppContent: React.FC = () => {
                     onProfileClick={() => setShowAuth(true)}
                     onOpenGlossary={() => setShowGlossary(true)}
                     onDashboardClick={() => setViewState(ViewState.DASHBOARD)}
+                    subjects={subjects}
                   />
                 </motion.div>
               )}
@@ -468,7 +479,7 @@ const AppContent: React.FC = () => {
                   <TopicPage
                     topic={selectedTopic}
                     onBack={handleBackToSubject}
-                    visualization={renderVisualization(selectedTopic.id)}
+                    visualization={renderVisualization(selectedTopic.slug)}
                     language={language}
                     onStartQuiz={startQuiz}
                   />
@@ -548,8 +559,8 @@ const AppContent: React.FC = () => {
                             key={lang}
                             onClick={() => setLanguage(lang)}
                             className={`py-2 rounded-lg text-[10px] font-mono uppercase tracking-widest transition-all ${language === lang
-                                ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/20'
-                                : 'bg-slate-800 text-slate-500 hover:text-slate-300'
+                              ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/20'
+                              : 'bg-slate-800 text-slate-500 hover:text-slate-300'
                               }`}
                           >
                             {lang}

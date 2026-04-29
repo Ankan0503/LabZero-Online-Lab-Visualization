@@ -1,6 +1,5 @@
-﻿import React from 'react';
+import React from 'react';
 import { Subject } from '../types/types';
-import { SUBJECTS } from '../utils/constants';
 import { Beaker, Zap, Calculator, Dna, ArrowRight, Play, Maximize2, Move3d, RotateCcw, Rotate3D } from 'lucide-react';
 import { motion } from 'motion/react';
 import { Language, translations } from '../services/translations';
@@ -20,6 +19,7 @@ interface LandingPageProps {
   onProfileClick?: () => void;
   onOpenGlossary?: () => void;
   onDashboardClick?: () => void;
+  subjects: Subject[];
 }
 
 const LandingPage: React.FC<LandingPageProps> = ({
@@ -28,7 +28,8 @@ const LandingPage: React.FC<LandingPageProps> = ({
   onLoginClick,
   onProfileClick,
   onDashboardClick,
-  theme
+  theme,
+  subjects
 }) => {
   return (
     <div className={`relative min-h-screen bg-[var(--bg-deep)] text-[var(--text-primary)] font-sans selection:bg-[#7DD3FC]/30 overflow-hidden transition-colors duration-500 ${theme === 'light' ? 'light-mode' : ''}`}>
@@ -168,7 +169,12 @@ const LandingPage: React.FC<LandingPageProps> = ({
               <motion.div
                 key={i}
                 initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.1 }}
-                onClick={() => onSelectSubject(SUBJECTS[i % SUBJECTS.length])}
+                onClick={() => {
+                  const slugs = ['chemistry', 'physics', 'math', 'biology'];
+                  const targetSlug = slugs[i];
+                  const subject = subjects.find(s => s.slug === targetSlug);
+                  if (subject) onSelectSubject(subject);
+                }}
                 className="bg-[var(--bg-panel)] rounded-[32px] p-6 border border-[var(--border-glass)] shadow-[0_4px_20px_rgba(0,0,0,0.03)] hover:shadow-[0_20px_40px_rgba(0,0,0,0.2)] transition-all duration-300 flex flex-col cursor-pointer group hover:-translate-y-1"
               >
                 <div className={`w-full h-48 rounded-[24px] bg-[var(--bg-deep)]/40 mb-6 overflow-hidden border ${card.theme} flex items-center justify-center relative`}>
