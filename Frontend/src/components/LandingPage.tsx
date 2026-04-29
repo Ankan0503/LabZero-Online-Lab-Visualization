@@ -65,9 +65,9 @@ const LandingPage: React.FC<LandingPageProps> = ({
             </>
           ) : (
             <div className="flex items-center gap-3">
-              {user.role && user.role !== 'student' && (
+              {user.role && (
                 <button onClick={onDashboardClick} className="px-5 py-2 bg-[var(--color-primary)] hover:bg-[var(--color-primary)]/90 text-white rounded-full text-[15px] font-medium transition-all shadow-sm hidden md:block">
-                  {user.role === 'teacher' ? 'Teacher Dashboard' : 'Institute Dashboard'}
+                  {user.role === 'teacher' ? 'Teacher Dashboard' : user.role === 'student' ? 'My Dashboard' : 'Institute Dashboard'}
                 </button>
               )}
               <button onClick={onProfileClick} className="px-4 py-2 border border-[var(--border-glass)] bg-white/5 hover:bg-[var(--bg-panel)] rounded-full text-[15px] font-medium text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-all">

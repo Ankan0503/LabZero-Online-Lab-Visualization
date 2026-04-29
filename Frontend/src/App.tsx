@@ -29,6 +29,7 @@ import PythagorasLab from './components/PythagorasLab';
 import LandingPage from './components/LandingPage';
 import SubjectPage from './components/SubjectPage';
 import TopicPage from './components/TopicPage';
+import StudentDashboard from './components/StudentDashboard';
 import TeacherDashboard from './components/TeacherDashboard';
 import InstituteDashboard from './components/InstituteDashboard';
 import GestureController from './components/GestureController';
@@ -490,8 +491,10 @@ const AppContent: React.FC = () => {
                 <motion.div key="dashboard" className="h-full w-full">
                   {user.role === 'teacher' ? (
                     <TeacherDashboard onBack={handleBackToLanding} />
-                  ) : (
+                  ) : user.role === 'institute' ? (
                     <InstituteDashboard onBack={handleBackToLanding} />
+                  ) : (
+                    <StudentDashboard onBack={handleBackToLanding} />
                   )}
                 </motion.div>
               )}
