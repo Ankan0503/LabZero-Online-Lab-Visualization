@@ -68,6 +68,7 @@ export enum TopicId {
 
 export interface Topic {
   id: TopicId;
+  slug: string;
   name: string;
   description: string;
   theory: string;
@@ -76,6 +77,7 @@ export interface Topic {
 
 export interface Subject {
   id: SubjectId;
+  slug: string;
   name: string;
   icon: string;
   color: string;

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Topic, TopicView, Resource, TopicId } from '../types/types';
+import { Topic, TopicView, Resource } from '../types/types';
 import { ArrowLeft, BookOpen, Play, Sparkles, FileText, Trash2, Download, Presentation, GraduationCap, Volume2, VolumeX, Zap } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import ResourceUpload from './ResourceUpload';
@@ -9,6 +9,7 @@ import { getResourcesByTopic, deleteResource } from '../services/resourceService
 import { motion, AnimatePresence } from 'motion/react';
 import { Language, translations } from '../services/translations';
 import { useAuth } from '../context/AuthContext';
+import { Skeleton } from 'boneyard-js/react';
 
 interface TopicPageProps {
   topic: Topic;
@@ -16,26 +17,12 @@ interface TopicPageProps {
   visualization: React.ReactNode;
   language: Language;
   onStartQuiz: () => void;
+  skeletonDebug?: boolean;
 }
 
 const TopicPage: React.FC<TopicPageProps> = ({ topic, onBack, visualization, language, onStartQuiz }) => {
   const { user } = useAuth();
-  const isLab = [
-    TopicId.REAL_EXPERIMENT,
-    TopicId.QUANTUM_CONFIG,
-    TopicId.WAVE_OPTICS,
-    TopicId.THERMODYNAMICS,
-    TopicId.MECHANICS,
-    TopicId.ELECTROMAGNETISM,
-    TopicId.MICROBIOLOGY,
-    TopicId.CELL_BIOLOGY,
-    TopicId.VECTOR_CALCULUS,
-    TopicId.PI_APPROXIMATION,
-    TopicId.COMPLEX_NUMBERS,
-    TopicId.PYTHAGORAS_THEOREM
-  ].includes(topic.id);
-
-  const [activeView, setActiveView] = useState<TopicView>(isLab ? TopicView.VISUALIZATION : TopicView.THEORY);
+  const [activeView, setActiveView] = useState<TopicView>(TopicView.THEORY);
   const t = (key: string) => translations[key]?.[language] || key;
   const [resources, setResources] = useState<Resource[]>([]);
   const [viewingResource, setViewingResource] = useState<Resource | null>(null);
@@ -101,9 +88,9 @@ const TopicPage: React.FC<TopicPageProps> = ({ topic, onBack, visualization, lan
               <ArrowLeft size={18} className="group-hover:-translate-x-1 transition-transform" />
               <span className="text-[10px] font-mono uppercase tracking-[0.2em]">{t('back')}</span>
             </button>
-            
+
             <div className="h-8 w-px bg-white/10" />
-            
+
             <div>
               <h1 className="text-xl font-display font-bold tracking-tight text-white uppercase">
                 {topic.name}
@@ -111,7 +98,7 @@ const TopicPage: React.FC<TopicPageProps> = ({ topic, onBack, visualization, lan
               <div className="flex items-center gap-2">
                 <div className="w-1 h-1 rounded-full bg-primary animate-pulse" />
                 <span className="text-[9px] font-mono text-slate-500 uppercase tracking-[0.3em]">
-                  Module ID: {topic.id.split('_').join('-')}
+                  Module ID: {String(topic.id).split('_').join('-')}
                 </span>
               </div>
             </div>
@@ -126,11 +113,10 @@ const TopicPage: React.FC<TopicPageProps> = ({ topic, onBack, visualization, lan
               <button
                 key={view.id}
                 onClick={() => setActiveView(view.id)}
-                className={`relative flex items-center gap-2 px-6 py-2 rounded-full text-[10px] font-mono uppercase tracking-[0.2em] transition-all duration-300 ${
-                  activeView === view.id
-                    ? 'text-white'
-                    : 'text-slate-500 hover:text-slate-300'
-                }`}
+                className={`relative flex items-center gap-2 px-6 py-2 rounded-full text-[10px] font-mono uppercase tracking-[0.2em] transition-all duration-300 ${activeView === view.id
+                  ? 'text-white'
+                  : 'text-slate-500 hover:text-slate-300'
+                  }`}
               >
                 {activeView === view.id && (
                   <motion.div
@@ -143,9 +129,9 @@ const TopicPage: React.FC<TopicPageProps> = ({ topic, onBack, visualization, lan
                 <span className="relative z-10">{view.label}</span>
               </button>
             ))}
-            
+
             <div className="w-px h-6 bg-white/10 mx-2" />
-            
+
             <button
               onClick={onStartQuiz}
               className="flex items-center gap-2 px-6 py-2 rounded-full text-[10px] font-mono uppercase tracking-[0.2em] bg-green-500/10 text-green-400 hover:bg-green-500 hover:text-white transition-all duration-300"
@@ -161,7 +147,7 @@ const TopicPage: React.FC<TopicPageProps> = ({ topic, onBack, visualization, lan
       <main className="flex-1 overflow-hidden relative">
         <AnimatePresence mode="wait">
           {activeView === TopicView.THEORY ? (
-            <motion.div 
+            <motion.div
               key="theory"
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
@@ -178,11 +164,10 @@ const TopicPage: React.FC<TopicPageProps> = ({ topic, onBack, visualization, lan
                     </div>
                     <button
                       onClick={toggleReadAloud}
-                      className={`flex items-center gap-2 px-4 py-2 rounded-xl border transition-all duration-300 ${
-                        isReading 
-                          ? 'bg-rose-500/10 border-rose-500/50 text-rose-400 shadow-[0_0_15px_rgba(244,63,94,0.2)]' 
-                          : 'bg-white/5 border-white/10 text-slate-400 hover:text-white hover:bg-white/10'
-                      }`}
+                      className={`flex items-center gap-2 px-4 py-2 rounded-xl border transition-all duration-300 ${isReading
+                        ? 'bg-rose-500/10 border-rose-500/50 text-rose-400 shadow-[0_0_15px_rgba(244,63,94,0.2)]'
+                        : 'bg-white/5 border-white/10 text-slate-400 hover:text-white hover:bg-white/10'
+                        }`}
                     >
                       {isReading ? <VolumeX size={14} /> : <Volume2 size={14} />}
                       <span className="text-[9px] font-mono uppercase tracking-widest">
@@ -208,36 +193,37 @@ const TopicPage: React.FC<TopicPageProps> = ({ topic, onBack, visualization, lan
                       <h2 className="text-xl font-display font-bold text-white uppercase tracking-tight">{t('referenceMaterials')}</h2>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      {resources.map((resource) => (
-                        <motion.div 
-                          key={resource.id} 
-                          initial={{ opacity: 0, x: 20 }}
-                          animate={{ opacity: 1, x: 0 }}
-                          className="group p-6 rounded-[32px] bg-white/[0.02] border border-white/5 hover:border-white/10 hover:bg-white/[0.04] transition-all"
-                        >
-                          <div className="flex items-center gap-4 mb-6">
-                            <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center text-primary group-hover:scale-110 transition-transform">
-                              <FileText size={20} />
+                    <Skeleton name="topic-resources" loading={false}>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        {resources.map((resource) => (
+                          <motion.div
+                            key={resource.id}
+                            initial={{ opacity: 0, x: 20 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            className="group p-6 rounded-[32px] bg-white/[0.02] border border-white/5 hover:border-white/10 hover:bg-white/[0.04] transition-all"
+                          >
+                            <div className="flex items-center gap-4 mb-6">
+                              <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center text-primary group-hover:scale-110 transition-transform">
+                                <FileText size={20} />
+                              </div>
+                              <div className="flex flex-col overflow-hidden">
+                                <span className="text-sm font-bold text-white truncate">{resource.name}</span>
+                                <span className="text-[9px] font-mono text-slate-600 uppercase tracking-widest">
+                                  {new Date(resource.timestamp).toLocaleDateString()}
+                                </span>
+                              </div>
                             </div>
-                            <div className="flex flex-col overflow-hidden">
-                              <span className="text-sm font-bold text-white truncate">{resource.name}</span>
-                              <span className="text-[9px] font-mono text-slate-600 uppercase tracking-widest">
-                                {new Date(resource.timestamp).toLocaleDateString()}
-                              </span>
-                            </div>
-                          </div>
-                          
-                          <div className="flex items-center gap-2 pt-4 border-t border-white/5">
-                            {(user?.role === 'teacher' || user?.role === 'institute') && (
-                              <button
-                                onClick={() => setViewingResource(resource)}
-                                className="flex-1 h-10 rounded-xl bg-primary text-[10px] font-mono uppercase tracking-widest text-white hover:bg-primary/80 transition-colors flex items-center justify-center gap-2"
-                              >
-                                <Presentation size={14} />
-                                {t('present')}
-                              </button>
-                            )}
+
+                            <div className="flex items-center gap-2 pt-4 border-t border-white/5">
+                              {(user?.role === 'teacher' || user?.role === 'institute') && (
+                                <button
+                                  onClick={() => setViewingResource(resource)}
+                                  className="flex-1 h-10 rounded-xl bg-primary text-[10px] font-mono uppercase tracking-widest text-white hover:bg-primary/80 transition-colors flex items-center justify-center gap-2"
+                                >
+                                  <Presentation size={14} />
+                                  {t('present')}
+                                </button>
+                              )}
                               <button
                                 onClick={() => handleDownloadResource(resource)}
                                 className="w-10 h-10 rounded-xl bg-white/5 text-slate-400 hover:text-white hover:bg-white/10 transition-all flex items-center justify-center"
@@ -252,18 +238,13 @@ const TopicPage: React.FC<TopicPageProps> = ({ topic, onBack, visualization, lan
                                   <Trash2 size={16} />
                                 </button>
                               )}
-                          </div>
-                        </motion.div>
-                      ))}
-                      
-                      {resources.length === 0 && (
-                        <div className="col-span-full py-16 text-center border-2 border-dashed border-white/5 rounded-[40px]">
-                          <p className="text-[10px] font-mono text-slate-600 uppercase tracking-[0.3em]">No materials archived for this module</p>
-                        </div>
-                      )}
-                    </div>
+                            </div>
+                          </motion.div>
+                        ))}
+                      </div>
+                    </Skeleton>
                   </section>
- 
+
                   <section className="space-y-8">
                     <div className="flex items-center gap-3">
                       <div className="w-10 h-10 rounded-xl bg-rose-500/10 flex items-center justify-center text-rose-400">
@@ -281,7 +262,7 @@ const TopicPage: React.FC<TopicPageProps> = ({ topic, onBack, visualization, lan
               </div>
             </motion.div>
           ) : activeView === TopicView.VISUALIZATION ? (
-            <motion.div 
+            <motion.div
               key="viz"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -298,15 +279,15 @@ const TopicPage: React.FC<TopicPageProps> = ({ topic, onBack, visualization, lan
               exit={{ opacity: 0, x: -20 }}
               className="h-full"
             >
-              <Classroom 
-                topic={topic} 
-                onPresent={(resource: any) => setViewingResource(resource)} 
+              <Classroom
+                topic={topic}
+                onPresent={(resource: any) => setViewingResource(resource)}
               />
             </motion.div>
           )}
         </AnimatePresence>
       </main>
- 
+
       {/* Resource Viewer Modal */}
       <AnimatePresence>
         {viewingResource && (
