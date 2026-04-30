@@ -4,6 +4,7 @@ import { ElementData, Molecule, Subject, SubjectId, TopicId } from '../types/typ
 export const SUBJECTS: Subject[] = [
   {
     id: SubjectId.CHEMISTRY,
+    slug: 'chemistry',
     name: 'Chemistry',
     icon: 'Beaker',
     color: 'emerald',
@@ -11,6 +12,7 @@ export const SUBJECTS: Subject[] = [
     topics: [
       {
         id: TopicId.ATOMIC_STRUCTURE,
+        slug: 'atomic_structure',
         name: 'Atomic Structure',
         description: 'Explore the building blocks of matter, from subatomic particles to electron orbitals.',
         targetClass: ['Class 11'],
@@ -36,6 +38,7 @@ The fundamental study of matter's composition and the behavior of subatomic part
       },
       {
         id: TopicId.MOLECULAR_STRUCTURE,
+        slug: 'molecular_structure',
         name: 'Molecular Structure',
         description: 'Understand how atoms bond together to form molecules and their 3D shapes.',
         targetClass: ['Class 11'],
@@ -58,10 +61,33 @@ Analysis of chemical bonding and the spatial arrangement of atoms in molecules.
 - **sp**: Linear geometry (alkynes).
 - **sp²**: Trigonal planar geometry (alkenes).
 - **sp³**: Tetrahedral geometry (alkanes).
+
+## Common Geometries
+- **Linear**: 180° angle (e.g., CO₂)
+- **Bent**: < 120° or 109.5° (e.g., H₂O)
+- **Trigonal Planar**: 120° (e.g., BF₃)
+- **Tetrahedral**: 109.5° (e.g., CH₄)
+        `
+      },
+      {
+        id: TopicId.QUANTUM_NUMBERS,
+        slug: 'quantum_numbers',
+        name: 'Quantum Numbers',
+        description: 'Learn the four quantum numbers that describe the unique state of an electron.',
+        targetClass: ['Class 11'],
+        theory: `
+# Quantum Numbers
+Quantum numbers are like the "address" of an electron in an atom. No two electrons in the same atom can have the same set of four quantum numbers.
+
+1. **Principal Quantum Number (n)**: Describes the energy level (1, 2, 3...).
+2. **Angular Momentum (l)**: Describes the shape of the orbital (0 to n-1).
+3. **Magnetic (ml)**: Describes the orientation of the orbital (-l to +l).
+4. **Spin (ms)**: Describes the direction of electron spin (+1/2 or -1/2).
         `
       },
       {
         id: TopicId.PERIODIC_TRENDS,
+        slug: 'periodic_trends',
         name: 'Periodic Trends',
         description: 'Discover how properties change across the periodic table.',
         targetClass: ['Class 12'],
@@ -81,6 +107,7 @@ Systematic variations in physical and chemical properties of elements across per
       },
       {
         id: TopicId.HISTORICAL_MODELS,
+        slug: 'historical_models',
         name: 'Historical Models',
         description: 'Explore how our understanding of the atom evolved from Dalton to Bohr.',
         targetClass: ['Class 11'],
@@ -106,33 +133,8 @@ The journey of discovery from solid spheres to quantized energy levels.
         `
       },
       {
-        id: TopicId.QUANTUM_NUMBERS,
-        name: 'Quantum Numbers',
-        description: 'Learn the "address" of an electron using the four quantum numbers.',
-        targetClass: ['Class 11'],
-        theory: `
-# Quantum Numbers
-Mathematical coordinates that describe the location and energy of electrons.
-
-## Principal Quantum Number (n)
-- **Defines**: Main energy level or shell.
-- **Values**: n = 1, 2, 3...
-
-## Azimuthal Quantum Number (l)
-- **Defines**: Shape of the orbital (s, p, d, f).
-- **Values**: 0 to (n-1).
-
-## Magnetic Quantum Number (mₗ)
-- **Defines**: Orientation of the orbital in space.
-- **Values**: -l to +l.
-
-## Spin Quantum Number (mₛ)
-- **Defines**: Direction of electron spin.
-- **Values**: +½ or -½.
-        `
-      },
-      {
         id: TopicId.QUANTUM_CONFIG,
+        slug: 'quantum_config',
         name: 'Quantum Configuration',
         description: 'Master the rules for filling electrons in orbitals.',
         targetClass: ['Class 11'],
@@ -155,6 +157,7 @@ Extra stability is observed in d⁵ and d¹⁰ configurations (e.g., Cr and Cu).
       },
       {
         id: TopicId.REAL_EXPERIMENT,
+        slug: 'advanced_lab',
         name: 'Advanced Experiment Lab',
         description: 'Interactive laboratory for studying reaction dynamics and kinetics.',
         targetClass: ['Class 11', 'Class 12'],
@@ -177,6 +180,7 @@ Dynamic simulation environment for exploring chemical reactions.
   },
   {
     id: SubjectId.PHYSICS,
+    slug: 'physics',
     name: 'Physics',
     icon: 'Zap',
     color: 'blue',
@@ -184,6 +188,7 @@ Dynamic simulation environment for exploring chemical reactions.
     topics: [
       {
         id: TopicId.MECHANICS,
+        slug: 'mechanics',
         name: 'Classical Mechanics',
         description: 'Study motion, forces, and energy in the macroscopic world.',
         targetClass: ['Class 11'],
@@ -209,6 +214,7 @@ The branch of physics dealing with the motion of bodies under the action of forc
       },
       {
         id: TopicId.ELECTROMAGNETISM,
+        slug: 'electromagnetism',
         name: 'Electromagnetism',
         description: 'Explore electric fields, magnetic forces, and circuits.',
         targetClass: ['Class 12'],
@@ -233,6 +239,7 @@ The interaction of electric currents or fields and magnetic fields.
       },
       {
         id: TopicId.WAVE_OPTICS,
+        slug: 'wave_optics',
         name: 'Wave Optics',
         description: 'Study of light as a wave and phenomena like interference and diffraction.',
         targetClass: ['Class 12'],
@@ -256,6 +263,7 @@ The study of light phenomena that cannot be explained by ray optics.
       },
       {
         id: TopicId.THERMODYNAMICS,
+        slug: 'thermodynamics',
         name: 'Thermodynamics',
         description: 'Heat, work, and the laws governing energy transformation.',
         targetClass: ['Class 11'],
@@ -278,13 +286,105 @@ Study of heat, work, temperature, and their relation to energy and physical prop
   },
   {
     id: SubjectId.MATH,
+    slug: 'math',
     name: 'Mathematics',
     icon: 'Calculator',
     color: 'indigo',
     targetClass: ['Class 9', 'Class 10', 'Class 11', 'Class 12'],
     topics: [
       {
+        id: TopicId.VECTOR_CALCULUS,
+        slug: 'vector_calculus',
+        name: 'Vector Algebra',
+        description: 'Visualize 3D vectors, cross products, and orthogonal planes.',
+        targetClass: ['Class 12'],
+        theory: `
+# Vector Cross Product
+In 3D space, the cross product of two vectors **A** and **B** is a new vector **C** that is perfectly perpendicular (90 degrees) to both of them.
+
+## Geometric Properties
+- **Direction**: Determined by the **Right-Hand Rule**. If you curl your fingers from A to B, your thumb points in the direction of the Cross Product.
+- **Magnitude**: The length of the resulting vector represents the area of the parallelogram formed by vectors A and B.
+- **Formula**: **A × B = |A| |B| sin(θ) n**
+
+## CSE Applications
+This is the backbone of 3D lighting! It is used to calculate "surface normals" to determine how light bounces off a 3D model.
+      `
+      },
+      {
+        id: TopicId.PI_APPROXIMATION,
+        slug: 'pi_approximation',
+        name: 'Approximating Pi',
+        description: 'Use the Archimedes method to calculate π by increasing polygon sides.',
+        targetClass: ['Class 10'],
+        theory: `
+# Archimedes' Method
+Archimedes discovered that you could find the value of **π** by "trapping" a circle between two polygons.
+
+## The Limit Concept
+- A **Hexagon** (n = 6) is a poor approximation of a circle.
+- A **Myriagon** (n = 10,000) is almost indistinguishable from a circle.
+- As the number of sides (n) approaches infinity, the ratio of the Perimeter to the Diameter approaches **π**.
+
+## The Calculation
+For a circle with radius r = 1:
+
+**Perimeter = n × sin(180/n) × 2**
+
+As n approaches infinity, **Perimeter → 2π**.
+  `
+      },
+      {
+        id: TopicId.COMPLEX_NUMBERS,
+        slug: 'complex_numbers',
+        name: 'Complex Numbers & Rotation',
+        description: 'Explore the Argand plane and watch how multiplying by imaginary numbers rotates space.',
+        targetClass: ['Class 11'],
+        theory: `
+# The Argand Plane
+A complex number like **Z = a + bi** has two parts: a Real part (a) and an Imaginary part (b). Instead of a standard XY graph, we plot these on the **Argand Plane**, where the X-axis is Real and the Y-axis is Imaginary.
+
+## The Magic of 'i'
+The imaginary unit **i** is defined as the square root of -1 (**i² = -1**). 
+But geometrically, multiplying any number by **i** does exactly one thing: it rotates that number perfectly **90 degrees counter-clockwise** around the origin!
+
+* 1 × i = **i** (90° rotation)
+* i × i = **-1** (180° rotation)
+* -1 × i = **-i** (270° rotation)
+* -i × i = **1** (360° back to the start)
+
+## CSE Application
+Complex numbers are the mathematical engine behind signal processing (Fourier Transforms). Every time your phone compresses an MP3 file or processes a JPEG image, it is using complex numbers to analyze frequencies!
+    `
+      },
+      {
+        id: TopicId.PYTHAGORAS_THEOREM,
+        slug: 'pythagoras_theorem',
+        name: 'Pythagorean Theorem',
+        description: 'Adjust the base and height of a triangle to visualize how the hypotenuse is calculated.',
+        targetClass: ['Class 9'],
+        theory: `
+# The Pythagorean Theorem
+In any right-angled triangle, the square of the longest side (the hypotenuse) is equal to the sum of the squares of the other two sides.
+
+## Differential Calculus
+- **Limits**: Behavior of a function as it approaches a specific input.
+- **Derivative**: Represents the instantaneous rate of change (slope of tangent).
+- **Chain Rule**: Differentiation of composite functions.
+
+## Integral Calculus
+- **Definite Integral**: Represents the net area under a curve.
+- **Indefinite Integral**: Antiderivative of a function.
+- **Fundamental Theorem**: Connects differentiation and integration.
+
+## Applications
+- **Optimization**: Finding maximum or minimum values of functions.
+- **Related Rates**: Calculating changes in one variable relative to another.
+        `
+      },
+      {
         id: TopicId.CALCULUS,
+        slug: 'calculus',
         name: 'Calculus',
         description: 'Master derivatives, integrals, and the study of continuous change.',
         targetClass: ['Class 11', 'Class 12'],
@@ -309,6 +409,7 @@ The mathematical study of continuous change, encompassing limits, derivatives, a
       },
       {
         id: TopicId.PROBABILITY,
+        slug: 'probability',
         name: 'Probability',
         description: 'The science of uncertainty and data analysis.',
         targetClass: ['Class 10', 'Class 12'],
@@ -332,6 +433,7 @@ The branch of mathematics concerning numerical descriptions of how likely an eve
       },
       {
         id: TopicId.TRIGONOMETRY,
+        slug: 'trigonometry',
         name: 'Trigonometry',
         description: 'Relationships between side lengths and angles of triangles.',
         targetClass: ['Class 10', 'Class 11'],
@@ -356,6 +458,7 @@ Study of the relationships involving lengths and angles of triangles.
       },
       {
         id: TopicId.LINEAR_ALGEBRA,
+        slug: 'linear_algebra',
         name: 'Linear Algebra',
         description: 'Study of vectors, matrices, and linear transformations.',
         targetClass: ['Class 11', 'Class 12'],
@@ -373,92 +476,41 @@ The branch of mathematics concerning linear equations, vectors, and matrices.
 - **Inverse**: Matrix that, when multiplied by the original, yields identity.
 - **Eigenvalues**: Scalars associated with linear transformations.
         `
-      },
-      {
-        id: TopicId.VECTOR_CALCULUS,
-        name: 'Vector Calculus',
-        description: 'Analyze vector fields and their properties in 3D space.',
-        targetClass: ['Class 12'],
-        theory: `
-# Vector Calculus
-Exploration of vector fields, gradients, divergence, and curl.
-
-## Vector Fields
-- **Definition**: Mapping each point in space to a vector value.
-- **Visualization**: Arrows representing magnitude and direction at every point.
-
-## Operators
-- **Gradient (∇f)**: Represents the direction of steepest increase of a scalar field.
-- **Divergence (∇·F)**: Measures the magnitude of a field's source or sink at a point.
-- **Curl (∇×F)**: Measures the rotation or "swirl" of a vector field.
-        `
-      },
-      {
-        id: TopicId.PI_APPROXIMATION,
-        name: 'Pi Approximation',
-        description: 'Discover the beauty of Pi through geometric approximations.',
-        targetClass: ['Class 9', 'Class 10'],
-        theory: `
-# Pi Approximation
-Methods for calculating the ratio of a circle's circumference to its diameter.
-
-## Archimedes' Method
-- Approximating Pi using inscribed and circumscribed polygons.
-- As the number of sides increases, the polygon's perimeter approaches the circle's circumference.
-
-## Monte Carlo Method
-- Using random sampling to estimate the value of Pi.
-- Ratio of points inside a circle to points inside a square.
-        `
-      },
-      {
-        id: TopicId.COMPLEX_NUMBERS,
-        name: 'Complex Numbers',
-        description: 'Visualize the imaginary unit and the complex plane.',
-        targetClass: ['Class 11'],
-        theory: `
-# Complex Numbers
-Numbers consisting of a real part and an imaginary part.
-
-## The Complex Plane
-- **Real Axis**: Horizontal axis for the real part.
-- **Imaginary Axis**: Vertical axis for the imaginary part.
-
-## Operations
-- **Addition**: Vector-like addition in the complex plane.
-- **Multiplication**: Rotations and scaling in the complex plane.
-        `
-      },
-      {
-        id: TopicId.PYTHAGORAS_THEOREM,
-        name: 'Pythagoras Theorem',
-        description: 'Interactive visualization of the fundamental theorem of geometry.',
-        targetClass: ['Class 9', 'Class 10'],
-        theory: `
-# Pythagoras Theorem
-In a right-angled triangle, the square of the hypotenuse is equal to the sum of the squares of the other two sides.
-
-## Formula
-- a² + b² = c²
-
-## Proofs
-- **Geometric Proof**: Rearranging squares to show area equivalence.
-- **Algebraic Proof**: Using similar triangles or area calculations.
-        `
       }
     ]
   },
   {
     id: SubjectId.BIOLOGY,
+    slug: 'biology',
     name: 'Biology',
     icon: 'Dna',
     color: 'emerald',
     targetClass: ['Class 11', 'Class 12'],
     topics: [
       {
+        id: TopicId.MICROBIOLOGY,
+        slug: 'microbiology',
+        name: 'Microorganisms',
+        description: 'Analyze the 3D structure and movement mechanisms of a single-celled bacterium.',
+        targetClass: ['Class 11'],
+        theory: `
+# Microbiology
+The study of microscopic organisms, such as bacteria, viruses, archaea, fungi and protozoa.
+
+## Bacteria
+- **Structure**: Prokaryotic cells with various shapes (cocci, bacilli, spirilla).
+- **Function**: Roles in decomposition, nitrogen fixation, and disease.
+
+## Viruses
+- **Nature**: Non-living infectious agents that require a host cell to replicate.
+- **Reproduction**: Lytic and lysogenic cycles.
+        `
+      },
+      {
         id: TopicId.CELL_BIOLOGY,
-        name: 'Cell Biology',
-        description: 'The study of cell structure and function.',
+        slug: 'cell_biology',
+        name: 'Cellular Anatomy',
+        description: 'Explore a 3D cross-section of a eukaryotic cell and its organelles.',
         targetClass: ['Class 11'],
         theory: `
 # Cell Biology
@@ -482,6 +534,7 @@ The fundamental unit of life; studying structural and functional components.
       },
       {
         id: TopicId.GENETICS,
+        slug: 'genetics',
         name: 'Genetics',
         description: 'Study of genes, genetic variation, and heredity.',
         targetClass: ['Class 12'],
@@ -505,6 +558,7 @@ The study of heredity and the variation of inherited characteristics.
       },
       {
         id: TopicId.PLANT_PHYSIOLOGY,
+        slug: 'plant_physiology',
         name: 'Plant Physiology',
         description: 'Functional processes occurring in plants.',
         targetClass: ['Class 11'],
@@ -528,6 +582,7 @@ Study of plant function, including photosynthesis and nutrient transport.
       },
       {
         id: TopicId.HUMAN_REPRODUCTION,
+        slug: 'human_reproduction',
         name: 'Human Reproduction',
         description: 'Biological processes of human life cycle.',
         targetClass: ['Class 12'],
@@ -549,24 +604,6 @@ The process of producing offspring through sexual reproduction.
 - **Gestation**: The 9-month period of fetal development.
         `
       },
-      {
-        id: TopicId.MICROBIOLOGY,
-        name: 'Microbiology',
-        description: 'Study of microscopic organisms like bacteria and viruses.',
-        targetClass: ['Class 11', 'Class 12'],
-        theory: `
-# Microbiology
-The study of microorganisms and their impact on life and environment.
-
-## Bacteria
-- **Structure**: Prokaryotic cells with various shapes (cocci, bacilli, spirilla).
-- **Function**: Roles in decomposition, nitrogen fixation, and disease.
-
-## Viruses
-- **Nature**: Non-living infectious agents that require a host cell to replicate.
-- **Reproduction**: Lytic and lysogenic cycles.
-        `
-      }
     ]
   }
 ];
