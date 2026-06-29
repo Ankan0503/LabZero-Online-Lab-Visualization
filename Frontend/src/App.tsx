@@ -179,6 +179,11 @@ const getInitialViewState = () => {
   if (params.get('analyticsFormId')) return ViewState.FEEDBACK_ANALYTICS;
   if (params.get('feedbackFormId') || params.get('formId')) return ViewState.FEEDBACK_FORM;
   if (params.get('feedback') === 'site') return ViewState.SITE_FEEDBACK;
+  
+  const view = params.get('view');
+  if (view && Object.values(ViewState).includes(view as ViewState)) {
+    return view as ViewState;
+  }
   return ViewState.LANDING;
 };
 
@@ -218,11 +223,55 @@ const AppContent: React.FC = () => {
   const [viewState, setViewState] = useState<ViewState>(getInitialViewState);
   const [feedbackThankYouDetails, setFeedbackThankYouDetails] =
     useState<FeedbackThankYouDetails | undefined>();
-  const [selectedSubject, setSelectedSubject] = useState<Subject | null>(null);
-  const [selectedTopic, setSelectedTopic] = useState<Topic | null>(null);
-  const [topicInitialView, setTopicInitialView] = useState<TopicView>(TopicView.THEORY);
-  const [selectedClass, setSelectedClass] = useState<string | null>(null);
-  const [meetingConfig, setMeetingConfig] = useState<MeetingConfig | null>(null);
+  const [selectedSubject, setSelectedSubject] = useState<Subject | null>(() => {
+    const cached = safeLocalStorage.getItem('labzero_subjects_cache');
+    const subjectsList: Subject[] = cached ? JSON.parse(cached) : [];
+    const params = new URLSearchParams(window.location.search);
+    const subjectSlug = params.get('subject');
+    if (subjectSlug && subjectsList.length > 0) {
+      return subjectsList.find(s => s.slug === subjectSlug || s.id === subjectSlug) || null;
+    }
+    return null;
+  });
+  const [selectedTopic, setSelectedTopic] = useState<Topic | null>(() => {
+    const cached = safeLocalStorage.getItem('labzero_subjects_cache');
+    const subjectsList: Subject[] = cached ? JSON.parse(cached) : [];
+    const params = new URLSearchParams(window.location.search);
+    const subjectSlug = params.get('subject');
+    const topicSlug = params.get('topic');
+    if (subjectSlug && topicSlug && subjectsList.length > 0) {
+      const sub = subjectsList.find(s => s.slug === subjectSlug || s.id === subjectSlug);
+      if (sub) {
+        return sub.topics.find(t => t.slug === topicSlug || t.id === topicSlug) || null;
+      }
+    }
+    return null;
+  });
+  const [topicInitialView, setTopicInitialView] = useState<TopicView>(() => {
+    const params = new URLSearchParams(window.location.search);
+    const val = params.get('topicView');
+    if (val && Object.values(TopicView).includes(val as TopicView)) {
+      return val as TopicView;
+    }
+    return TopicView.THEORY;
+  });
+  const [selectedClass, setSelectedClass] = useState<string | null>(() => {
+    const params = new URLSearchParams(window.location.search);
+    return params.get('class') || null;
+  });
+  const [meetingConfig, setMeetingConfig] = useState<MeetingConfig | null>(() => {
+    const params = new URLSearchParams(window.location.search);
+    const roomId = params.get('roomId');
+    if (roomId) {
+      return {
+        roomId,
+        title: params.get('meetingTitle') || 'Online Class',
+        subtitle: params.get('meetingSubtitle') || '',
+        role: 'guest', // resolved dynamically when user loads
+      };
+    }
+    return null;
+  });
 
   const [showAITutor, setShowAITutor] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
@@ -338,6 +387,155 @@ const AppContent: React.FC = () => {
     const refreshId = window.setInterval(fetchAllData, 15000);
     return () => window.clearInterval(refreshId);
   }, [fetchAllData, viewState]);
+
+  const lastViewStateRef = useRef<ViewState>(viewState);
+
+  // Synchronize state changes to URL search parameters
+  useEffect(() => {
+    const url = new URL(window.location.href);
+
+    const setOrDelete = (key: string, value: string | null | undefined) => {
+      if (value) {
+        url.searchParams.set(key, value);
+      } else {
+        url.searchParams.delete(key);
+      }
+    };
+
+    setOrDelete('view', viewState && viewState !== ViewState.LANDING ? viewState : null);
+    setOrDelete('subject', selectedSubject ? (selectedSubject.slug || selectedSubject.id) : null);
+    setOrDelete('topic', selectedTopic ? (selectedTopic.slug || selectedTopic.id) : null);
+    setOrDelete('class', selectedClass);
+    setOrDelete('topicView', viewState === ViewState.TOPIC && topicInitialView ? topicInitialView : null);
+
+    if (viewState === ViewState.MEETING && meetingConfig) {
+      url.searchParams.set('roomId', meetingConfig.roomId);
+      url.searchParams.set('meetingTitle', meetingConfig.title);
+      url.searchParams.set('meetingSubtitle', meetingConfig.subtitle);
+    } else {
+      url.searchParams.delete('roomId');
+      url.searchParams.delete('meetingTitle');
+      url.searchParams.delete('meetingSubtitle');
+    }
+
+    if (viewState !== ViewState.FEEDBACK_ANALYTICS) {
+      url.searchParams.delete('analyticsFormId');
+    }
+    if (viewState !== ViewState.FEEDBACK_TEXT_ANALYSIS) {
+      url.searchParams.delete('textAnalysisFormId');
+    }
+
+    if (url.search !== window.location.search) {
+      const isNewView = lastViewStateRef.current !== viewState;
+      if (isNewView) {
+        window.history.pushState({}, '', url.toString());
+      } else {
+        window.history.replaceState({}, '', url.toString());
+      }
+    }
+    lastViewStateRef.current = viewState;
+  }, [viewState, selectedSubject, selectedTopic, selectedClass, topicInitialView, meetingConfig]);
+
+  // Resolve subject and topic from URL params when subjects list loads or updates
+  useEffect(() => {
+    if (subjects.length > 0) {
+      const params = new URLSearchParams(window.location.search);
+      const subjectSlug = params.get('subject');
+      const topicSlug = params.get('topic');
+
+      // Update subject if it doesn't match the URL
+      const currentSubjectSlug = selectedSubject ? (selectedSubject.slug || selectedSubject.id) : null;
+      if (subjectSlug !== currentSubjectSlug) {
+        const foundSubject = subjects.find(s => s.slug === subjectSlug || s.id === subjectSlug) || null;
+        setSelectedSubject(foundSubject);
+
+        // Resolve topic for this new subject
+        if (foundSubject && topicSlug) {
+          const foundTopic = foundSubject.topics.find(t => t.slug === topicSlug || t.id === topicSlug) || null;
+          setSelectedTopic(foundTopic);
+        } else {
+          setSelectedTopic(null);
+        }
+      } else {
+        // Subject matches, check if topic matches
+        const currentTopicSlug = selectedTopic ? (selectedTopic.slug || selectedTopic.id) : null;
+        if (topicSlug !== currentTopicSlug) {
+          if (selectedSubject && topicSlug) {
+            const foundTopic = selectedSubject.topics.find(t => t.slug === topicSlug || t.id === topicSlug) || null;
+            setSelectedTopic(foundTopic);
+          } else {
+            setSelectedTopic(null);
+          }
+        }
+      }
+    }
+  }, [subjects, selectedSubject, selectedTopic]);
+
+  // Listen for popstate (browser back/forward navigation)
+  useEffect(() => {
+    const handlePopState = () => {
+      const params = new URLSearchParams(window.location.search);
+
+      // 1. Resolve viewState
+      let view = params.get('view') as ViewState || ViewState.LANDING;
+      if (params.get('textAnalysisFormId')) view = ViewState.FEEDBACK_TEXT_ANALYSIS;
+      else if (params.get('analyticsFormId')) view = ViewState.FEEDBACK_ANALYTICS;
+      else if (params.get('feedbackFormId') || params.get('formId')) view = ViewState.FEEDBACK_FORM;
+      else if (params.get('feedback') === 'site') view = ViewState.SITE_FEEDBACK;
+      setViewState(view);
+
+      // 2. Resolve class
+      setSelectedClass(params.get('class') || null);
+
+      // 3. Resolve topicView
+      const topicViewVal = params.get('topicView');
+      if (topicViewVal && Object.values(TopicView).includes(topicViewVal as TopicView)) {
+        setTopicInitialView(topicViewVal as TopicView);
+      } else {
+        setTopicInitialView(TopicView.THEORY);
+      }
+
+      // 4. Resolve meeting
+      const roomId = params.get('roomId');
+      if (roomId) {
+        setMeetingConfig({
+          roomId,
+          title: params.get('meetingTitle') || 'Online Class',
+          subtitle: params.get('meetingSubtitle') || '',
+          role: user?.role === 'student' ? 'guest' : 'host',
+        });
+      } else {
+        setMeetingConfig(null);
+      }
+
+      // 5. Resolve subject and topic
+      if (subjects.length > 0) {
+        const subjectSlug = params.get('subject');
+        const topicSlug = params.get('topic');
+        const foundSubject = subjects.find(s => s.slug === subjectSlug || s.id === subjectSlug) || null;
+        setSelectedSubject(foundSubject);
+        if (foundSubject && topicSlug) {
+          const foundTopic = foundSubject.topics.find(t => t.slug === topicSlug || t.id === topicSlug) || null;
+          setSelectedTopic(foundTopic);
+        } else {
+          setSelectedTopic(null);
+        }
+      }
+    };
+
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
+  }, [subjects, user]);
+
+  // Synchronize meeting role when user resolves/loads
+  useEffect(() => {
+    if (meetingConfig) {
+      const expectedRole = user?.role === 'student' ? 'guest' : 'host';
+      if (meetingConfig.role !== expectedRole) {
+        setMeetingConfig(prev => prev ? { ...prev, role: expectedRole } : null);
+      }
+    }
+  }, [user, meetingConfig]);
 
   // Lazy-load heavier datasets (Elements, Molecules) only when navigating away from the Landing Page
   useEffect(() => {
